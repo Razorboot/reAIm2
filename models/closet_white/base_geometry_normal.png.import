@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bhd5g0cml6xk8"
-path.s3tc="res://.godot/imported/base_geometry_normal.png-3e1112aa301766e429a37c33671a986f.s3tc.ctex"
+path.s3tc="res://.godot/imported/base_geometry_normal.png-a09bb66b602e70e9a59bae29e3e5099c.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://models/closet/base_geometry_normal.png"
-dest_files=["res://.godot/imported/base_geometry_normal.png-3e1112aa301766e429a37c33671a986f.s3tc.ctex"]
+source_file="res://models/closet_white/base_geometry_normal.png"
+dest_files=["res://.godot/imported/base_geometry_normal.png-a09bb66b602e70e9a59bae29e3e5099c.s3tc.ctex"]
 
 [params]
 
