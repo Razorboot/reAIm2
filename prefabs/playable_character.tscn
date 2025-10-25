@@ -6,13 +6,11 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x50rk"]
 radius = 0.403154
 
-[node name="PlayableCharacter" type="CharacterBody3D" node_paths=PackedStringArray("Camera", "Neck", "Spine", "GuiControl", "ResponseLabel", "Interactor")]
+[node name="PlayableCharacter" type="CharacterBody3D" node_paths=PackedStringArray("Camera", "Neck", "Spine", "Interactor")]
 script = ExtResource("1_e0jmj")
 Camera = NodePath("Spine/Neck/Camera3D")
 Neck = NodePath("Spine/Neck")
 Spine = NodePath("Spine")
-GuiControl = NodePath("")
-ResponseLabel = NodePath("")
 Interactor = NodePath("Interactor")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
