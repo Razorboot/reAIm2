@@ -35,3 +35,6 @@ func _download_and_load_glb(glb_url: String) -> void:
 	var scene := doc.generate_scene(state)  # builds a PackedScene
 	var inst = scene.instantiate()
 	add_child(inst)
+	
+	print("Genned model is: ")
+	print(inst.get_class())
