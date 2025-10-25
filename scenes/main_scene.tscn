@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
-[ext_resource type="PackedScene" uid="uid://i0qg1sosvdtp" path="res://models/closet/base.glb" id="3_7ykc4"]
-[ext_resource type="PackedScene" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
-[ext_resource type="PackedScene" uid="uid://ve4j7hyatvox" path="res://models/DeskForRoom_Model/desk_mutable.tscn" id="4_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://i0qg1sosvdtp" path="res://models/closet_white/base.glb" id="3_7ykc4"]
+[ext_resource type="PackedScene" uid="uid://dmuw0bkm6h0qb" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://ve4j7hyatvox" path="res://models/desk_room/desk_mutable.tscn" id="4_pu3yx"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_und3l"]
 

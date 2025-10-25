@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://c408sbr8c4mc0"
-path="res://.godot/imported/base_basic_shaded.glb-85efa39f047aa9414441a2bac87bf1c5.scn"
+path="res://.godot/imported/base_basic_shaded.glb-b84a82da88bfd2c4b174ac46f8f771d7.scn"
 
 [deps]
 
-source_file="res://models/DeskForRoom_Model/base_basic_shaded.glb"
-dest_files=["res://.godot/imported/base_basic_shaded.glb-85efa39f047aa9414441a2bac87bf1c5.scn"]
+source_file="res://models/desk_room/base_basic_shaded.glb"
+dest_files=["res://.godot/imported/base_basic_shaded.glb-b84a82da88bfd2c4b174ac46f8f771d7.scn"]
 
 [params]
 

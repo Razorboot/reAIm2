@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://duqb575so0jy8"]
+
+[ext_resource type="PackedScene" uid="uid://c4vaul1vagkwv" path="res://models/closet_white/base.glb" id="1_83l13"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rli57"]
+size = Vector3(0.9038696, 1.8579712, 0.6333008)
+
+[node name="ClosetWhite" instance=ExtResource("1_83l13")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00064086914, 0.94125366, -0.020751953)
+shape = SubResource("BoxShape3D_rli57")
