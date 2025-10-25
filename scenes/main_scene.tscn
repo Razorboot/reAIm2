@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://b5bxch75s2rvu"]
+[gd_scene load_steps=9 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
 [ext_resource type="PackedScene" uid="uid://bjj5uoiak2vgs" path="res://models/bed_blue/base_basic_pbr.glb" id="2_pw63i"]
@@ -9,6 +9,22 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pw63i"]
 size = Vector3(1.590332, 1.4801636, 2.083252)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pw63i"]
+sky_top_color = Color(0.0015074585, 0.0115730595, 0.03426954, 1)
+sky_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
+sky_curve = 0.27991018
+ground_bottom_color = Color(0.05330111, 0.13122624, 0.18335637, 1)
+ground_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
+sun_angle_max = 46.55
+
+[sub_resource type="Sky" id="Sky_7ykc4"]
+sky_material = SubResource("ProceduralSkyMaterial_pw63i")
+
+[sub_resource type="Environment" id="Environment_pw63i"]
+background_mode = 2
+sky = SubResource("Sky_7ykc4")
+ambient_light_source = 3
 
 [node name="MainScene" type="Node3D"]
 
@@ -36,3 +52,6 @@ transform = Transform3D(1.3399976, 0, -0.0025491416, 0, 1.3400002, 0, 0.00254914
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BlueBed/StaticBody3D"]
 transform = Transform3D(1, 0, 2.3283064e-10, 0, 1.0000001, 0, -2.3283064e-10, 0, 1, -0.11499202, 0.24008188, 0.027222395)
 shape = SubResource("BoxShape3D_pw63i")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_pw63i")
