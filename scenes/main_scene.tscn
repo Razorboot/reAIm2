@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b5bxch75s2rvu"]
+[gd_scene load_steps=6 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
 [ext_resource type="PackedScene" uid="uid://bjj5uoiak2vgs" path="res://models/bed_blue/base_basic_pbr.glb" id="2_pw63i"]
@@ -6,6 +6,9 @@
 [sub_resource type="BoxMesh" id="BoxMesh_und3l"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_w2twt"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pw63i"]
+size = Vector3(1.590332, 1.4801636, 2.083252)
 
 [node name="MainScene" type="Node3D"]
 
@@ -25,5 +28,11 @@ shape = SubResource("BoxShape3D_w2twt")
 [node name="PlayableCharacter" parent="." instance=ExtResource("1_w2twt")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.145749, 0.029227972, 3.4706907)
 
-[node name="base_basic_pbr" parent="." instance=ExtResource("2_pw63i")]
+[node name="BlueBed" parent="." instance=ExtResource("2_pw63i")]
 transform = Transform3D(1.3399976, 0, -0.0025491416, 0, 1.3400002, 0, 0.0025491416, 0, 1.3399976, 1.5784545, 0, 1.9374106)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="BlueBed"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlueBed/StaticBody3D"]
+transform = Transform3D(1, 0, 2.3283064e-10, 0, 1.0000001, 0, -2.3283064e-10, 0, 1, -0.11499202, 0.24008188, 0.027222395)
+shape = SubResource("BoxShape3D_pw63i")
