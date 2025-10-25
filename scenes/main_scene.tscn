@@ -13,9 +13,11 @@ size = Vector3(1.590332, 1.4801636, 2.083252)
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pw63i"]
 sky_top_color = Color(0.0015074585, 0.0115730595, 0.03426954, 1)
 sky_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
-sky_curve = 0.27991018
+sky_curve = 0.55981976
 ground_bottom_color = Color(0.05330111, 0.13122624, 0.18335637, 1)
 ground_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
+ground_curve = 0.06276674
+ground_energy_multiplier = 1.5
 sun_angle_max = 46.55
 
 [sub_resource type="Sky" id="Sky_7ykc4"]
@@ -25,6 +27,10 @@ sky_material = SubResource("ProceduralSkyMaterial_pw63i")
 background_mode = 2
 sky = SubResource("Sky_7ykc4")
 ambient_light_source = 3
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 3.96
+glow_bloom = 0.17
 
 [node name="MainScene" type="Node3D"]
 
@@ -55,3 +61,7 @@ shape = SubResource("BoxShape3D_pw63i")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_pw63i")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.49999997, 0.61237246, -0.61237246, 0, 0.7071068, 0.7071068, 0.86602557, -0.35355338, 0.35355338, 0, 0, 0)
+shadow_enabled = true
