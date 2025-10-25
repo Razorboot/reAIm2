@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://cgtgvcl3xuv0x"]
+
+[ext_resource type="Script" uid="uid://qa6qomhqcx8b" path="res://classes/playable_character_controller.gd" id="1_e0jmj"]
+[ext_resource type="Script" uid="uid://dmt5viv0qbgc7" path="res://classes/spring.gd" id="2_piqln"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x50rk"]
+radius = 0.403154
+
+[node name="PlayableCharacter" type="CharacterBody3D" node_paths=PackedStringArray("Camera", "Neck", "Spine", "GuiControl", "ResponseLabel", "Interactor")]
+script = ExtResource("1_e0jmj")
+Camera = NodePath("Spine/Neck/Camera3D")
+Neck = NodePath("Spine/Neck")
+Spine = NodePath("Spine")
+GuiControl = NodePath("")
+ResponseLabel = NodePath("")
+Interactor = NodePath("Interactor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_x50rk")
+
+[node name="Spine" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67259, 0)
+
+[node name="Neck" type="Node3D" parent="Spine"]
+script = ExtResource("2_piqln")
+
+[node name="Camera3D" type="Camera3D" parent="Spine/Neck"]
+
+[node name="Interactor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67259, 0)

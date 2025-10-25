@@ -1,5 +1,25 @@
-[gd_scene format=3 uid="uid://b5bxch75s2rvu"]
+[gd_scene load_steps=4 format=3 uid="uid://b5bxch75s2rvu"]
+
+[ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_und3l"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w2twt"]
 
 [node name="MainScene" type="Node3D"]
 
-[node name="Node3D" type="Node3D" parent="."]
+[node name="Ground" type="Node3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0.5)
+mesh = SubResource("BoxMesh_und3l")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground/MeshInstance3D"]
+transform = Transform3D(0.99999976, 0, 0, 0, 1, 0, 0, 0, 0.99999976, 4.768371e-08, 0, 4.768371e-08)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_w2twt")
+
+[node name="PlayableCharacter" parent="." instance=ExtResource("1_w2twt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.145749, 1.029228, 4.4706907)
