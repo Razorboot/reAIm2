@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://b5bxch75s2rvu"]
+[gd_scene load_steps=10 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
 [ext_resource type="PackedScene" uid="uid://i0qg1sosvdtp" path="res://models/closet/base.glb" id="3_7ykc4"]
-[ext_resource type="PackedScene" uid="uid://dmuw0bkm6h0qb" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
+[ext_resource type="PackedScene" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://ve4j7hyatvox" path="res://models/DeskForRoom_Model/desk_mutable.tscn" id="4_pu3yx"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_und3l"]
 
@@ -60,3 +61,6 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0
 
 [node name="BlueBed" parent="." instance=ExtResource("3_pu3yx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+
+[node name="base_basic_pbr" parent="." instance=ExtResource("4_pu3yx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.055, 0, 5.637)
