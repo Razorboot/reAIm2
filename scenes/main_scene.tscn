@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
-[ext_resource type="PackedScene" uid="uid://b4j3cwoskvs45" path="res://prefabs/voice_handler.tscn" id="2_pw63i"]
+[ext_resource type="PackedScene" uid="uid://b4j3cwoskvs45" path="res://prefabs/VoiceHandler.tscn" id="2_pw63i"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_und3l"]
 
