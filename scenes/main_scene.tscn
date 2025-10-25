@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://b5bxch75s2rvu"]
+[gd_scene load_steps=5 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
+[ext_resource type="PackedScene" uid="uid://bjj5uoiak2vgs" path="res://models/bed_blue/base_basic_pbr.glb" id="2_pw63i"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_und3l"]
 
@@ -12,7 +13,7 @@
 transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0.5)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0.49999997, -0.5, 0.49999997)
 mesh = SubResource("BoxMesh_und3l")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Ground/MeshInstance3D"]
@@ -22,4 +23,7 @@ transform = Transform3D(0.99999976, 0, 0, 0, 1, 0, 0, 0, 0.99999976, 4.768371e-0
 shape = SubResource("BoxShape3D_w2twt")
 
 [node name="PlayableCharacter" parent="." instance=ExtResource("1_w2twt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.145749, 1.029228, 4.4706907)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.145749, 0.029227972, 3.4706907)
+
+[node name="base_basic_pbr" parent="." instance=ExtResource("2_pw63i")]
+transform = Transform3D(1.3399976, 0, -0.0025491416, 0, 1.3400002, 0, 0.0025491416, 0, 1.3399976, 1.5784545, 0, 1.9374106)
