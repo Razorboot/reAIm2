@@ -2,26 +2,21 @@ extends Node3D
 class_name RodinGen2Loader
 
 const RODIN_API_BASE := "https://api.hyper3d.com/api/v2"
-const API_KEY := "6U224eE8QxWEQtSsSbGLb6TWvzjjMKAf4D7nFlozQPrUyfW7cgiKkKQGdQNzOMoN" # rotate / do not commit
+const API_KEY := "1BfAVawDESvzWB0j8Qr88UYu74H2Y0S9W40ftmx0toTg04UZx3Uuo9O8QoYRTxRs" # rotate / do not commit
 const POLL_INTERVAL_SEC := 3.0
-const TRI_BUDGET := 2000        # target triangle count
+const TRI_BUDGET := 1000
 
 signal generation_started(task_uuid: String, subscription_key: String)
 signal generation_progress(status: String)
 signal generation_failed(message: String)
-signal generation_completed(model_path: String, instanced_node: Node3D)
+signal generation_completed(model_url: String, instanced_node: Node3D)
 
-# Public: Returns the instanced model Node3D (or null).
 func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: String = "Quad") -> Node3D:
 	# 1) Submit
 	var submit := await _submit_generation(prompt, quality, mesh_mode)
-	if typeof(submit) != TYPE_DICTIONARY:
-		emit_signal("generation_failed", "Submit failed (no JSON).")
+	if typeof(submit) != TYPE_DICTIONARY or not submit.has("uuid") or not submit.has("jobs"):
+		emit_signal("generation_failed", "Submit failed or unexpected payload.")
 		return null
-	if not submit.has("uuid") or not submit.has("jobs"):
-		emit_signal("generation_failed", "Submit returned unexpected payload.")
-		return null
-
 	var task_uuid := str(submit["uuid"])
 
 	var subscription_key := ""
@@ -35,94 +30,61 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 
 	emit_signal("generation_started", task_uuid, subscription_key)
 
-	# 2) Poll
+	# 2) Poll until ALL jobs are Done (or any Failed)
 	while true:
-		var status := await _check_status(subscription_key)
-		if status == "":
+		var st := await _check_status_all(subscription_key)
+		var state := str(st.get("state", ""))
+		if state == "":
 			emit_signal("generation_failed", "Status check failed.")
 			return null
-		emit_signal("generation_progress", status)
-		if status == "Done":
+
+		var done := int(st.get("done", 0))
+		var total := int(st.get("total", 0))
+		emit_signal("generation_progress", "%s (%d/%d)" % [state, done, total])
+
+		if state == "Done":
 			break
-		if status == "Failed":
+		if state == "Failed":
 			emit_signal("generation_failed", "Remote generation failed.")
 			return null
+
 		await get_tree().create_timer(POLL_INTERVAL_SEC).timeout
 
-	# Give Rodin a moment to publish files before first /download
+	# tiny grace period for file publication
 	await get_tree().create_timer(1.0).timeout
 
-	# 3) Download list — ONLY task_uuid with robust retry (avoid NO_SUCH_TASK)
+	# 3) Download list (task_uuid only, with retries)
 	var entries := await _download_results_with_retry(task_uuid)
 	if entries.is_empty():
-		emit_signal("generation_failed", "No downloadable files.")
+		emit_signal("generation_failed", "No downloadable files after publication window.")
 		return null
 
-	# 4) Choose asset URL
+	# 4) Pick direct GLB/GLTF (skip ZIP to stay in-memory)
 	var asset_url := ""
-	var asset_type := ""  # "glb" | "gltf" | "zip"
-
 	for e in entries:
 		if typeof(e) != TYPE_DICTIONARY:
 			continue
-		var fname := str(e.get("name", "")).to_lower()
+		var name := str(e.get("name", "")).to_lower()
 		var url := str(e.get("url", ""))
-		if fname.ends_with(".glb") or url.ends_with(".glb"):
+		if name.ends_with(".glb") or url.ends_with(".glb") or name.ends_with(".gltf") or url.ends_with(".gltf"):
 			asset_url = url
-			asset_type = "glb"
 			break
-		if fname.ends_with(".gltf") or url.ends_with(".gltf"):
-			asset_url = url
-			asset_type = "gltf"
-			break
-
 	if asset_url == "":
-		for e in entries:
-			if typeof(e) != TYPE_DICTIONARY:
-				continue
-			var fname2 := str(e.get("name", "")).to_lower()
-			var url2 := str(e.get("url", ""))
-			if fname2.ends_with(".zip") or url2.ends_with(".zip"):
-				asset_url = url2
-				asset_type = "zip"
-				break
-
-	if asset_url == "":
-		emit_signal("generation_failed", "No .glb/.gltf/.zip in download list.")
+		emit_signal("generation_failed", "No direct .glb/.gltf link in results.")
 		return null
 
-	# 5) Save to user_models/<uuid>
-	# For exported games, prefer: var base_dir := "user://user_models"
-	var base_dir := "res://user_models"
-	DirAccess.make_dir_recursive_absolute(base_dir)
-	var job_dir := "%s/%s" % [base_dir, task_uuid]
-	DirAccess.make_dir_recursive_absolute(job_dir)
+	# 5) Download bytes and parse GLB from memory (no saving)
+	var bytes := await _download_bytes(asset_url)
+	if bytes.is_empty():
+		emit_signal("generation_failed", "Model download failed.")
+		return null
 
-	var model_path := ""
-	if asset_type == "zip":
-		var zip_path := "%s/result.zip" % job_dir
-		var ok_zip := await _download_file(asset_url, zip_path)
-		if not ok_zip:
-			emit_signal("generation_failed", "ZIP download failed.")
-			return null
-		model_path = _extract_first_3d_from_zip(zip_path, job_dir)
-		if model_path == "":
-			emit_signal("generation_failed", "ZIP contained no .glb/.gltf.")
-			return null
-	else:
-		model_path = "%s/model.%s" % [job_dir, asset_type]
-		var ok := await _download_file(asset_url, model_path)
-		if not ok:
-			emit_signal("generation_failed", "Model download failed.")
-			return null
-
-	# 6) Load & instance under the **root** scene
-	var scene: PackedScene = _load_glb_scene(model_path)
+	var scene = _load_glb_scene_from_bytes(bytes)
 	if scene == null:
 		emit_signal("generation_failed", "GLB/GLTF parse failed.")
 		return null
 
-	var inst := scene.instantiate()
+	var inst = scene#.instantiate()
 	var inst3d := inst as Node3D
 	if inst3d == null:
 		var wrap := Node3D.new()
@@ -134,7 +96,6 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 
 	var root_scene := get_tree().current_scene
 	if root_scene == null:
-		# fallback to last child of root if current_scene is null
 		var rc := get_tree().root.get_child_count()
 		if rc > 0:
 			root_scene = get_tree().root.get_child(rc - 1)
@@ -142,29 +103,27 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 			root_scene = self
 	root_scene.add_child(inst3d)
 
-	emit_signal("generation_completed", model_path, inst3d)
+	emit_signal("generation_completed", asset_url, inst3d)
 	return inst3d
 
 
-# ---------------- HTTP + LOGGING ----------------
+# ---------------- HTTP ----------------
 
 func _submit_generation(prompt: String, quality: String, mesh_mode: String) -> Dictionary:
 	var http := HTTPRequest.new()
 	add_child(http)
 
 	var url := "%s/rodin" % RODIN_API_BASE
-	# preview_render=true to ensure a preview.webp appears
 	var fields := {
 		"tier": "Gen-2",
 		"prompt": prompt,
 		"geometry_file_format": "glb",
 		"material": "PBR",
-		"quality": quality,          # "low" for speed
-		"mesh_mode": mesh_mode,      # "Quad" for nicer topology
+		"quality": quality,
+		"mesh_mode": mesh_mode,
 		"max_triangles": TRI_BUDGET,
 		"triangle_budget": TRI_BUDGET,
-		"max_triangle_count": TRI_BUDGET,
-		"preview_render": "true"
+		"max_triangle_count": TRI_BUDGET
 	}
 	var mp := _encode_multipart(fields)
 	var headers := PackedStringArray([
@@ -191,7 +150,8 @@ func _submit_generation(prompt: String, quality: String, mesh_mode: String) -> D
 		return {}
 	return JSON.parse_string(text)
 
-func _check_status(subscription_key: String) -> String:
+# Aggregated status: returns { state, done, total }
+func _check_status_all(subscription_key: String) -> Dictionary:
 	var http := HTTPRequest.new()
 	add_child(http)
 
@@ -202,14 +162,13 @@ func _check_status(subscription_key: String) -> String:
 		"accept: application/json"
 	])
 	var payload := {"subscription_key": subscription_key}
-	var body := JSON.stringify(payload)
 
-	_print_http("STATUS ->", url, headers, body)
-	var err := http.request(url, headers, HTTPClient.METHOD_POST, body)
+	_print_http("STATUS ->", url, headers, JSON.stringify(payload))
+	var err := http.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 	if err != OK:
 		remove_child(http); http.queue_free()
 		_print_http("STATUS ERR", str(err))
-		return ""
+		return {"state": ""}
 
 	var res = await http.request_completed
 	remove_child(http); http.queue_free()
@@ -218,35 +177,51 @@ func _check_status(subscription_key: String) -> String:
 	var bytes: PackedByteArray = res[3]
 	var text := bytes.get_string_from_utf8()
 	_print_http("STATUS <-", "HTTP %d" % code, text)
-
 	if code != 200 and code != 201:
-		return ""
+		return {"state": ""}
 
 	var data = JSON.parse_string(text)
 	if typeof(data) != TYPE_DICTIONARY or not data.has("jobs"):
-		return ""
-	var jobs = data["jobs"]
-	if jobs is Array and jobs.size() > 0 and jobs[0].has("status"):
-		return str(jobs[0]["status"])
-	if jobs is Dictionary and jobs.has("status"):
-		return str(jobs["status"])
-	return ""
+		return {"state": ""}
 
-# Retry: ONLY task_uuid, longer backoff, tries {"task_uuid":...} and {"uuid":...}
+	var total := 0
+	var done := 0
+	var failed := 0
+	var jobs = data["jobs"]
+
+	if jobs is Array:
+		total = jobs.size()
+		for j in jobs:
+			if typeof(j) != TYPE_DICTIONARY: continue
+			var s := str(j.get("status", ""))
+			if s == "Done": done += 1
+			elif s == "Failed": failed += 1
+	elif jobs is Dictionary:
+		total = 1
+		var s := str(jobs.get("status", ""))
+		if s == "Done": done = 1
+		elif s == "Failed": failed = 1
+
+	if failed > 0:
+		return {"state": "Failed", "done": done, "total": total}
+	if total > 0 and done >= total:
+		return {"state": "Done", "done": done, "total": total}
+	return {"state": "Generating", "done": done, "total": total}
+
+# Retry: ONLY task_uuid; tries {"task_uuid":...} then {"uuid":...}; backoff
 func _download_results_with_retry(task_uuid: String) -> Array:
-	var attempts := [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0]  # seconds
-	for i in range(attempts.size() + 1):
+	var delays := [0.5, 1.0, 2.0, 4.0]  # ~37.5s worst-case
+	for i in range(delays.size() + 1):
 		var entries := await _download_results_once(task_uuid, false)
 		if entries.is_empty():
 			entries = await _download_results_once(task_uuid, true)
 		if not entries.is_empty():
 			return entries
-
-		if i == attempts.size():
+		if i == delays.size():
 			break
-		var delay = attempts[i]
-		_print_http("DOWNLOAD retry", "empty list; sleeping", str(delay) + "s")
-		await get_tree().create_timer(delay).timeout
+		var d = delays[i]
+		_print_http("DOWNLOAD retry", "empty list; sleeping", str(d) + "s")
+		await get_tree().create_timer(d).timeout
 	return []
 
 func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
@@ -285,7 +260,6 @@ func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
 	var bytes: PackedByteArray = res[3]
 	var text := bytes.get_string_from_utf8()
 	_print_http(tag + " <-", "HTTP %d" % code, text)
-
 	if code != 200 and code != 201:
 		return []
 
@@ -293,15 +267,19 @@ func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
 	if typeof(data) != TYPE_DICTIONARY:
 		return []
 
-	# Accept several shapes
+	# Common / variant shapes
 	if data.has("list") and data["list"] is Array:
 		return data["list"]
 	if data.has("files") and data["files"] is Array:
 		return data["files"]
 	if data.has("results") and data["results"] is Array:
 		return data["results"]
+	if data.has("artifacts") and data["artifacts"] is Array:
+		return data["artifacts"]
+	if data.has("assets") and data["assets"] is Array:
+		return data["assets"]
 
-	# Fallback: some tenants expose only a preview URL
+	# Fallback: preview-only presence (not used for loading)
 	if data.has("preview_url"):
 		return [ {"name":"preview.webp", "url": str(data["preview_url"])} ]
 	if data.has("preview") and typeof(data["preview"]) == TYPE_DICTIONARY and data["preview"].has("url"):
@@ -309,7 +287,7 @@ func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
 
 	return []
 
-func _download_file(url: String, save_path: String) -> bool:
+func _download_bytes(url: String) -> PackedByteArray:
 	var http := HTTPRequest.new()
 	add_child(http)
 
@@ -318,7 +296,7 @@ func _download_file(url: String, save_path: String) -> bool:
 	if err != OK:
 		remove_child(http); http.queue_free()
 		_print_http("GET ERR", str(err))
-		return false
+		return PackedByteArray()
 
 	var res = await http.request_completed
 	remove_child(http); http.queue_free()
@@ -326,56 +304,24 @@ func _download_file(url: String, save_path: String) -> bool:
 	var code: int = res[1]
 	var bytes: PackedByteArray = res[3]
 	_print_http("GET <-", "HTTP %d" % code, "[%d bytes]" % bytes.size())
-
 	if code != 200:
-		return false
-
-	var f := FileAccess.open(save_path, FileAccess.WRITE)
-	if f == null:
-		return false
-	f.store_buffer(bytes)
-	f.close()
-	return true
+		return PackedByteArray()
+	return bytes
 
 
-# ---------------- GLB/ZIP + Placement ----------------
+# ---------------- GLB (in-memory) + placement ----------------
 
-func _load_glb_scene(path: String):
+func _load_glb_scene_from_bytes(bytes: PackedByteArray):
 	var state := GLTFState.new()
 	var doc := GLTFDocument.new()
-	var err := doc.append_from_file(path, state)
+
+	# For .glb (no external deps) empty base_path is fine
+	var err := doc.append_from_buffer(bytes, "", state, 0)
 	if err != OK:
-		push_warning("GLTF append_from_file failed: %s" % str(err))
+		push_warning("GLTF append_from_buffer failed: %s" % str(err))
 		return null
+
 	return doc.generate_scene(state)
-
-func _extract_first_3d_from_zip(zip_path: String, out_dir: String) -> String:
-	var zr := ZIPReader.new()
-	var ok := zr.open(zip_path)
-	if ok != OK:
-		push_warning("ZIP open failed.")
-		return ""
-	var files := zr.get_files()
-	var chosen := ""
-	for p in files:
-		var lp := p.to_lower()
-		if lp.ends_with(".glb") or lp.ends_with(".gltf"):
-			chosen = p
-			break
-	if chosen == "":
-		zr.close()
-		return ""
-	var bytes := zr.read_file(chosen)
-	zr.close()
-
-	var ext := chosen.get_extension().to_lower()
-	var out_path := "%s/extracted.%s" % [out_dir, ext]
-	var f := FileAccess.open(out_path, FileAccess.WRITE)
-	if f == null:
-		return ""
-	f.store_buffer(bytes)
-	f.close()
-	return out_path
 
 func _auto_place(root: Node3D) -> void:
 	var aabb := _compute_aabb(root)
@@ -383,7 +329,7 @@ func _auto_place(root: Node3D) -> void:
 		var center := aabb.position + aabb.size * 0.5
 		root.translate(-center)
 		var target := 1.5
-		var longest: float = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
+		var longest = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
 		if longest > 0.0001:
 			root.scale = Vector3.ONE * (target / longest)
 
@@ -391,9 +337,9 @@ func _compute_aabb(node: Node) -> AABB:
 	var merged := AABB()
 	var first := true
 	if node is MeshInstance3D:
-		var mesh: Mesh = node.mesh
+		var mesh = node.mesh
 		if mesh:
-			var m_aabb := mesh.get_aabb()
+			var m_aabb = mesh.get_aabb()
 			m_aabb = m_aabb * (node as Node3D).global_transform
 			merged = m_aabb
 			first = false
@@ -427,7 +373,7 @@ func _encode_multipart(fields: Dictionary) -> Dictionary:
 	}
 
 
-# ---------------- Logging helper ----------------
+# ---------------- Logging ----------------
 
 func _print_http(tag: String, a: Variant = "", b: Variant = "", c: Variant = "") -> void:
 	var parts: Array[String] = []
@@ -436,7 +382,7 @@ func _print_http(tag: String, a: Variant = "", b: Variant = "", c: Variant = "")
 			continue
 		var s := ""
 		if typeof(v) == TYPE_PACKED_STRING_ARRAY:
-			s = ",".join(v)                # headers
+			s = ",".join(v)
 		elif typeof(v) == TYPE_DICTIONARY:
 			s = JSON.stringify(v)
 		else:

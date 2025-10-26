@@ -1,0 +1,65 @@
+[gd_scene load_steps=10 format=3 uid="uid://cdfxt6na6ddqa"]
+
+[ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="1_mlx0s"]
+[ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_o1hyn"]
+[ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="3_deb1l"]
+[ext_resource type="Script" uid="uid://lqm5nmrepjmg" path="res://classes/map_generator.gd" id="4_1rhhd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_g4w0c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o1hyn"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4w0c"]
+sky_top_color = Color(0.0015074585, 0.0115730595, 0.03426954, 1)
+sky_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
+sky_curve = 0.55981976
+ground_bottom_color = Color(0.05330111, 0.13122624, 0.18335637, 1)
+ground_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
+ground_curve = 0.06276674
+ground_energy_multiplier = 1.5
+sun_angle_max = 46.55
+
+[sub_resource type="Sky" id="Sky_7ykc4"]
+sky_material = SubResource("ProceduralSkyMaterial_g4w0c")
+
+[sub_resource type="Environment" id="Environment_o1hyn"]
+background_mode = 2
+sky = SubResource("Sky_7ykc4")
+ambient_light_source = 3
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 3.96
+glow_bloom = 0.17
+
+[node name="DreamScene" type="Node3D"]
+
+[node name="RodinGenerator" parent="." instance=ExtResource("1_mlx0s")]
+
+[node name="Ground" type="Node3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0.5)
+mesh = SubResource("BoxMesh_g4w0c")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground/MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_o1hyn")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_o1hyn")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.49999997, 0.61237246, -0.61237246, 0, 0.7071068, 0.7071068, 0.86602557, -0.35355338, 0.35355338, 0, 0, 0)
+shadow_enabled = true
+
+[node name="PlayableCharacter" parent="." instance=ExtResource("1_o1hyn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0785503, 0, 2.1150005)
+
+[node name="RodinHandler" type="Node" parent="PlayableCharacter" node_paths=PackedStringArray("rodin")]
+script = ExtResource("3_deb1l")
+rodin = NodePath("../../RodinGenerator")
+
+[node name="MapGenerator" type="Node3D" parent="."]
+script = ExtResource("4_1rhhd")
