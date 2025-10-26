@@ -103,7 +103,7 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 		else:
 			root_scene = self
 	#root_scene.add_child(inst3d)
-	root_scene.add_child(potentialBody)
+	#root_scene.add_child(potentialBody)
 
 	emit_signal("generation_completed", asset_url, potentialBody)
 	return potentialBody

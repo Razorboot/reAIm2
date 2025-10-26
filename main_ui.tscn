@@ -13,7 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="12_mcdcf"]
 [ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="13_sd2ej"]
 
-[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer", "uiBox")]
+[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "rodin", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer", "uiBox")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,6 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4uoxc")
 chat = NodePath("NarratorBackend")
+rodin = NodePath("RodinGenerator")
 chatLabel = NodePath("CloudBox/NarratorLabel")
 editLabel = NodePath("CloudBox/UserLabel")
 continueButton = NodePath("CloudBox/ContinueButton")

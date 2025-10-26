@@ -13,9 +13,15 @@ extends Control
 @export var peaSpring: Node3D
 @export var uiBox: TextureRect
 
+@export var objectDrop: Node3D
+
 @export var Cam: Camera3D
 @export var CamStart: Node3D
 @export var CamEnd: Node3D
+@export var finalCamPoint: Node3D
+
+var playerWon: bool = false
+var endObject: RigidBody3D                   # assign in editor
 
 # --- Cinematic tuning ---
 @export var cam_move_time: float = 2.5
@@ -23,13 +29,13 @@ extends Control
 
 # --- Typewriter tuning ---
 @export var chars_per_sec: float = 30.0
-@export var start_text := ""                 # first message you send to the AI (introText)
+@export var start_text := ""
 
-# Pauses (multipliers on base time = 1/chars_per_sec)
-@export var pause_mult_period: float = 6.0   # . ! ?
-@export var pause_mult_comma: float = 3.0    # , ;
-@export var pause_mult_dash: float = 3.0     # - — –
-@export var pause_mult_newline: float = 6.0  # \n
+# Pauses
+@export var pause_mult_period: float = 6.0
+@export var pause_mult_comma: float = 3.0
+@export var pause_mult_dash: float = 3.0
+@export var pause_mult_newline: float = 6.0
 
 # Voice blip pitch jitter
 @export var pitch_jitter: float = 0.07
@@ -51,8 +57,9 @@ var _time_passed := 0.0
 enum State { Intro, ThemeInput, AIWait, AIDisplay }
 var _state: int = State.Intro
 var _just_revealed := false
+var _game_over := false                     # <— NEW: block further interaction after end
 
-# Theme & chat loop
+# Theme loop
 const THEME_CHAR_MAX := 150
 var _has_theme := false
 var _chosen_theme := ""
@@ -72,13 +79,13 @@ func _ready() -> void:
 	msPeaDefaultScale = msPea.scale
 	msPeaDefaultRotation = msPea.rotation
 
-	# Connect backend
+	# Backend signals
 	chat.reply_ready.connect(_on_reply_ready)
 	chat.error.connect(_on_chat_error)
 
 	# Button
 	continueButton.pressed.connect(_on_continue_pressed)
-	continueButton.disabled = true  # disabled during intro
+	continueButton.disabled = true
 
 	# UI setup
 	editLabel.visible = false
@@ -90,7 +97,21 @@ func _ready() -> void:
 		var c := uiBox.modulate
 		uiBox.modulate = Color(c.r, c.g, c.b, 0.0)
 
-	# Kick off the intro cinematic, then start the chat
+	# Optional: Rodin hooks you already had…
+	rodin.generation_progress.connect(func(s): print("status:", s))
+	rodin.generation_failed.connect(func(m): push_error(m))
+	rodin.generation_completed.connect(func(path, node):
+		if node:
+			node.visible = false
+			if "freeze" in node:
+				node.freeze = true
+			node.global_position = objectDrop.global_position
+			endObject = node
+			var root_scene := get_tree().current_scene
+			root_scene.add_child(endObject)
+	)
+
+	# Opening cinematic → intro chat
 	await _run_opening_cinematic()
 	await _start_chat_intro()
 
@@ -141,9 +162,11 @@ func _process(delta: float) -> void:
 		msPea.rotation.z = lerp(msPea.rotation.z, msPeaDefaultRotation.z, delta)
 
 # ------------------------------------------------
-# Button behavior (Skip → reveal, click again → advance)
+# Button behavior
 # ------------------------------------------------
 func _on_continue_pressed() -> void:
+	if _game_over:
+		return
 	if _is_typing():
 		_reveal_all()
 		_just_revealed = true
@@ -163,6 +186,8 @@ func _on_continue_pressed() -> void:
 			pass
 
 func _advance_after_reveal() -> void:
+	if _game_over:
+		return
 	match _state:
 		State.Intro, State.AIDisplay:
 			_goto_theme_input()
@@ -175,15 +200,29 @@ func _advance_after_reveal() -> void:
 # Chat callbacks
 # ------------------------------------------------
 func _on_reply_ready(t: String) -> void:
+	if _game_over:
+		return
+
 	continueButton.disabled = false
 
-	# >>> NEW: parse [bracketed] secret and strip it from text
+	# Extract [secret] → _guess_object and strip it
 	var parsed := _extract_guess_and_strip(t)
 	if parsed.has("text"):
 		t = parsed["text"]
 
-	_start_typewriter(t)
+	# WIN/LOSE detection (exact strings)
+	var is_win := t.find("YOU WON!!!") != -1
+	var is_lose := t.find("YOU LOST!!!") != -1
+	if is_win or is_lose:
+		playerWon = is_win
+		# Show the message fully, then end sequence
+		_start_typewriter(t)
+		_reveal_all()
+		await _handle_game_end(playerWon)
+		return
 
+	# Normal display path
+	_start_typewriter(t)
 	if _state == State.AIWait and not _has_theme:
 		_state = State.Intro
 	else:
@@ -191,45 +230,83 @@ func _on_reply_ready(t: String) -> void:
 	_set_continue_text("Skip")
 
 func _on_chat_error(msg: String) -> void:
+	if _game_over:
+		return
 	continueButton.disabled = false
 	_start_typewriter("[ERROR] " + msg)
 	_state = State.AIDisplay
 	_set_continue_text("Skip")
 
 # ------------------------------------------------
+# END SEQUENCE
+# ------------------------------------------------
+func _block_ui_inputs() -> void:
+	continueButton.disabled = true
+	if editLabel:
+		editLabel.editable = false
+		editLabel.visible = false
+
+func _end_conversation() -> void:
+	# We simply stop sending new messages and ignore further input.
+	_game_over = true
+	_block_ui_inputs()
+
+func _fade_ui_out() -> void:
+	if uiBox == null:
+		return
+	var tw := create_tween()
+	tw.tween_property(uiBox, "modulate:a", 0.0, ui_fade_time) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tw.finished
+
+func _camera_to_final_point() -> void:
+	if Cam == null or finalCamPoint == null:
+		return
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(Cam, "global_position", finalCamPoint.global_position, cam_move_time) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(Cam, "global_rotation_degrees", finalCamPoint.global_rotation_degrees, cam_move_time) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	await tw.finished
+
+func _unfreeze_end_object() -> void:
+	if endObject:
+		if "freeze" in endObject:
+			endObject.freeze = false
+		endObject.visible = true
+
+func _handle_game_end(win: bool) -> void:
+	_end_conversation()
+	await _fade_ui_out()
+	await _camera_to_final_point()
+	_unfreeze_end_object()
+	# (Optional) any SFX, confetti, score submit, etc.
+
+# ------------------------------------------------
 # Bracket parsing helpers
 # ------------------------------------------------
 func _extract_guess_and_strip(src: String) -> Dictionary:
-	# Finds the FIRST [ ... ] block, saves sanitized inside to _guess_object,
-	# then removes ALL bracketed blocks from the rendered text and tidies whitespace.
 	var re := RegEx.new()
-	re.compile("\\[([^\\]]+)\\]")  # capture content inside [ ]
+	re.compile("\\[([^\\]]+)\\]")
 
 	var match := re.search(src)
 	if match:
 		var raw_inside := match.get_string(1)
 		_guess_object = _sanitize_guess(raw_inside)
+		# Kick off 3D gen
+		rodin.generate_text_to_glb(_guess_object)
 
-		# Remove ALL bracketed sections from display text
 		var stripped := re.sub(src, "", true)
-
-		# Collapse excessive whitespace and trim
 		var ws := RegEx.new()
 		ws.compile("\\s{2,}")
 		stripped = ws.sub(stripped, " ", true).strip_edges()
 
-		# Optional: debug print
-		# print("Guess object set to: ", _guess_object)
-		
 		print("GUESS OBJECT IS: " + _guess_object)
-
 		return {"text": stripped, "found": true}
 
-	# No bracket found → leave text alone
 	return {"text": src, "found": false}
 
 func _sanitize_guess(s: String) -> String:
-	# Lowercase, then remove everything except a–z and 0–9
 	var lower := s.to_lower()
 	var re := RegEx.new()
 	re.compile("[^a-z0-9]+")
@@ -239,13 +316,18 @@ func _sanitize_guess(s: String) -> String:
 # State transitions
 # ------------------------------------------------
 func _goto_theme_input() -> void:
+	if _game_over:
+		return
 	_state = State.ThemeInput
 	chatLabel.visible = false
 	editLabel.visible = true
+	editLabel.editable = true
 	editLabel.grab_focus()
 	_set_continue_text("Ask" if _has_theme else "Send")
 
 func _submit_input() -> void:
+	if _game_over:
+		return
 	var text := editLabel.text.strip_edges()
 	if text.length() == 0:
 		return
@@ -262,6 +344,8 @@ func _submit_input() -> void:
 	_send_ai_and_wait(text)
 
 func _send_ai_and_wait(outgoing: String) -> void:
+	if _game_over:
+		return
 	editLabel.clear()
 	editLabel.visible = false
 	chatLabel.visible = true
