@@ -9,7 +9,6 @@ func _ready() -> void:
 	rodin.generation_progress.connect(func(s): print("status:", s))
 	rodin.generation_failed.connect(func(m): push_error(m))
 	rodin.generation_completed.connect(func(path, node: Node3D):
-		#print("Saved:", path)
 		node.global_position = Vector3(0, 0.5, 0)
 		timeThing += 1
 		if timeThing == 2:
@@ -18,5 +17,3 @@ func _ready() -> void:
 	)
 
 	var inst := await rodin.generate_text_to_glb("simple square")
-	#if inst:
-		#print("Spawned:", inst.name, " at ", inst.global_transform.origin)

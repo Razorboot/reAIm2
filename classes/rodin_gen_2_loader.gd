@@ -92,7 +92,7 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 		wrap.add_child(inst)
 		inst3d = wrap
 
-	_auto_place(inst3d)
+	#_auto_place(inst3d)
 
 	var root_scene := get_tree().current_scene
 	if root_scene == null:
@@ -324,35 +324,43 @@ func _load_glb_scene_from_bytes(bytes: PackedByteArray):
 
 	return doc.generate_scene(state)
 
-func _auto_place(root: Node3D) -> void:
-	var aabb := _compute_aabb(root)
-	if aabb.size.length() > 0.0001:
-		var center := aabb.position + aabb.size * 0.5
-		root.translate(-center)
-		var target := 1.5
-		var longest = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
-		if longest > 0.0001:
-			root.scale = Vector3.ONE * (target / longest)
-
-func _compute_aabb(node: Node) -> AABB:
-	var merged := AABB()
-	var first := true
+func create_collision(node: Node) -> void:
 	if node is MeshInstance3D:
-		var mesh = node.mesh
+		var mesh: Mesh = node.mesh
 		if mesh:
-			var m_aabb = mesh.get_aabb()
-			m_aabb = m_aabb * (node as Node3D).global_transform
-			merged = m_aabb
-			first = false
-	for c in node.get_children():
-		var a := _compute_aabb(c)
-		if a.size != Vector3.ZERO:
-			if first:
-				merged = a
-				first = false
-			else:
-				merged = merged.merge(a)
-	return merged
+			var m_aabb: AABB = mesh.get_aabb()
+			pass
+		
+
+#func _auto_place(root: Node3D) -> void:
+	#var aabb := _compute_aabb(root)
+	#if aabb.size.length() > 0.0001:
+		#var center := aabb.position + aabb.size * 0.5
+		#root.translate(-center)
+		#var target := 1.5
+		#var longest = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
+		#if longest > 0.0001:
+			#root.scale = Vector3.ONE * (target / longest)
+
+#func _compute_aabb(node: Node) -> AABB:
+	#var merged := AABB()
+	#var first := true
+	#if node is MeshInstance3D:
+		#var mesh = node.mesh
+		#if mesh:
+			#var m_aabb: AABB = mesh.get_aabb()
+			#m_aabb = m_aabb * (node as Node3D).global_transform
+			#merged = m_aabb
+			#first = false
+	#for c in node.get_children():
+		#var a := _compute_aabb(c)
+		#if a.size != Vector3.ZERO:
+			#if first:
+				#merged = a
+				#first = false
+			#else:
+				#merged = merged.merge(a)
+	#return merged
 
 
 # ---------------- Multipart (fields only) ----------------

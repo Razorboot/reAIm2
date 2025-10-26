@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cdfxt6na6ddqa"]
+[gd_scene load_steps=11 format=3 uid="uid://cdfxt6na6ddqa"]
 
 [ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="1_mlx0s"]
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_o1hyn"]
 [ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="3_deb1l"]
+[ext_resource type="Script" uid="uid://d7wu4q72nkhv" path="res://classes/narrator_backend.gd" id="4_1rhhd"]
+[ext_resource type="Script" uid="uid://dfqespyrsi0tm" path="res://classes/narrator_handler.gd" id="5_wqgmn"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_g4w0c"]
 
@@ -56,6 +58,13 @@ shadow_enabled = true
 [node name="PlayableCharacter" parent="." instance=ExtResource("1_o1hyn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0785503, 0, 2.1150005)
 
-[node name="RodinHandler" type="Node" parent="PlayableCharacter" node_paths=PackedStringArray("rodin")]
+[node name="NarratorBackend" type="Node" parent="."]
+script = ExtResource("4_1rhhd")
+
+[node name="NarratorFrontend" type="Node" parent="." node_paths=PackedStringArray("chat")]
+script = ExtResource("5_wqgmn")
+chat = NodePath("../NarratorBackend")
+
+[node name="RodinHandler" type="Node" parent="." node_paths=PackedStringArray("rodin")]
 script = ExtResource("3_deb1l")
-rodin = NodePath("../../RodinGenerator")
+rodin = NodePath("../RodinGenerator")
