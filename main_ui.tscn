@@ -1,42 +1,23 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjrnc6vghj1xo"]
+[gd_scene load_steps=6 format=3 uid="uid://bjrnc6vghj1xo"]
 
 [ext_resource type="Texture2D" uid="uid://b1fg2apslp6e7" path="res://images/cloud_box.png" id="1_2ppmm"]
+[ext_resource type="Script" uid="uid://bl6nykv1whdqx" path="res://classes/chat_manager.gd" id="1_4uoxc"]
+[ext_resource type="Script" uid="uid://d7wu4q72nkhv" path="res://classes/narrator_backend.gd" id="2_ktt6o"]
+[ext_resource type="Script" uid="uid://dfqespyrsi0tm" path="res://classes/narrator_handler.gd" id="3_4uoxc"]
+[ext_resource type="FontFile" uid="uid://yjquut0b5cgf" path="res://fonts/FinkHeavy.ttf" id="3_llbac"]
 
-[node name="MainUI" type="Control"]
+[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "chatLabel", "editLabel", "continueButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Dialogue" type="VBoxContainer" parent="."]
-layout_direction = 2
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Dialogue"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="Dialogue/HBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Dialogue/HBoxContainer/TextureRect"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="Dialogue"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="Dialogue/HBoxContainer2"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Dialogue/HBoxContainer2/TextureRect"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+script = ExtResource("1_4uoxc")
+chat = NodePath("NarratorBackend")
+chatLabel = NodePath("CloudBox/NarratorLabel")
+editLabel = NodePath("CloudBox/UserLabel")
+continueButton = NodePath("CloudBox/ContinueButton")
 
 [node name="CloudBox" type="TextureRect" parent="."]
 layout_mode = 1
@@ -52,7 +33,7 @@ texture = ExtResource("1_2ppmm")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="CloudBox"]
+[node name="NarratorLabel" type="Label" parent="CloudBox"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -60,11 +41,56 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -278.5
-offset_top = -72.5
+offset_top = -68.5
 offset_right = 277.5
-offset_bottom = 67.5
+offset_bottom = 39.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.2509804)
+theme_override_colors/font_color = Color(0, 0, 0, 0.8901961)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.17254902)
+theme_override_fonts/font = ExtResource("3_llbac")
 text = "Hi beyatch! :3"
+autowrap_mode = 2
+
+[node name="UserLabel" type="TextEdit" parent="CloudBox"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -278.5
+offset_top = -68.5
+offset_right = 277.5
+offset_bottom = 39.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0.8901961)
+theme_override_colors/font_placeholder_color = Color(0, 0, 0, 0.65882355)
+theme_override_colors/background_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_llbac")
+placeholder_text = "Type in  your theme here, then press 'Continue'!"
+autowrap_mode = 2
+
+[node name="ContinueButton" type="Button" parent="CloudBox"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 177.5
+offset_top = 48.5
+offset_right = 274.5
+offset_bottom = 83.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Continue"
+
+[node name="NarratorBackend" type="Node" parent="."]
+script = ExtResource("2_ktt6o")
+
+[node name="NarratorFrontend" type="Node" parent="." node_paths=PackedStringArray("chat")]
+script = ExtResource("3_4uoxc")
+chat = NodePath("../NarratorBackend")
