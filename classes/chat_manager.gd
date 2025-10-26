@@ -9,6 +9,8 @@ extends Control
 @export var continueButton: Button
 @export var msPea: Node3D
 @export var voiceBitPlayer: AudioStreamPlayer
+@export var winSoundPlayer: AudioStreamPlayer
+@export var failSoundPlayer: AudioStreamPlayer
 @export var voiceBitSounds: Array            # Array[AudioStream]
 @export var peaSpring: Node3D
 @export var uiBox: TextureRect
@@ -276,6 +278,10 @@ func _unfreeze_end_object() -> void:
 		endObject.visible = true
 
 func _handle_game_end(win: bool) -> void:
+	if win:
+		winSoundPlayer.play()
+	else:
+		failSoundPlayer.play()
 	_end_conversation()
 	await _fade_ui_out()
 	await _camera_to_final_point()

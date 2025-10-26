@@ -68,7 +68,7 @@ start_text = "A player was cloud hopping and happened to land on Ms. Pea (Your) 
 time_passed_multiplier = 13.0
 
 [node name="base_basic_pbr" parent="Camera3D/CanvasLayer" instance=ExtResource("6_rn5oh")]
-transform = Transform3D(1.1, 0, 0, 0, 0.88, 0, 0, 0, 1.1, 2.0454984, -0.5593884, -3.3152041)
+transform = Transform3D(1.756, 0, 0, 0, 1.405, 0, 0, 0, 1.756, 2.0454984, -1.7574244, -3.3152041)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_3nu70")
@@ -82,7 +82,7 @@ shadow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45819232, 2.3006666, 10.033923)
 
 [node name="CamFinal" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0563304, 1.5810432, 0.9966316)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0563304, 1.5810432, 2.971165)
 
 [node name="CamStart" type="Node3D" parent="."]
 transform = Transform3D(0.72371435, -0.32494953, 0.60880655, 1.4901161e-08, 0.88220084, 0.47087333, -0.6900996, -0.34077778, 0.6384614, 13.270394, 10.838104, 10.033923)
@@ -93,4 +93,4 @@ volume_db = -5.0
 autoplay = true
 
 [node name="ObjectDrop" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.335875, 8.431641, -2.4950368)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0454984, 4.3942485, -3.3152041)

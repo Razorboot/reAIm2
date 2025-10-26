@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bjrnc6vghj1xo"]
+[gd_scene load_steps=15 format=3 uid="uid://bjrnc6vghj1xo"]
 
 [ext_resource type="Texture2D" uid="uid://b1fg2apslp6e7" path="res://images/cloud_box.png" id="1_2ppmm"]
 [ext_resource type="Script" uid="uid://bl6nykv1whdqx" path="res://classes/chat_manager.gd" id="1_4uoxc"]
@@ -11,9 +11,11 @@
 [ext_resource type="AudioStream" uid="uid://tq5hheqdkibk" path="res://audio/p_sound.wav" id="6_dnsp1"]
 [ext_resource type="AudioStream" uid="uid://bx6611igltm4x" path="res://audio/q_sound.wav" id="7_ilgax"]
 [ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="12_mcdcf"]
+[ext_resource type="AudioStream" uid="uid://cy55a6csbrq3h" path="res://audio/win_sound.mp3" id="13_dnsp1"]
+[ext_resource type="AudioStream" uid="uid://csq6jr8ibilfb" path="res://audio/fail_sound.wav" id="13_mcdcf"]
 [ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="13_sd2ej"]
 
-[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "rodin", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer", "uiBox")]
+[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "rodin", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer", "winSoundPlayer", "failSoundPlayer", "uiBox")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,6 +29,8 @@ chatLabel = NodePath("CloudBox/NarratorLabel")
 editLabel = NodePath("CloudBox/UserLabel")
 continueButton = NodePath("CloudBox/ContinueButton")
 voiceBitPlayer = NodePath("VoiceBitPlayer")
+winSoundPlayer = NodePath("WinSoundPlayer")
+failSoundPlayer = NodePath("FailSoundPlayer")
 voiceBitSounds = [ExtResource("2_8yam0"), ExtResource("3_81ket"), ExtResource("4_mcdcf"), ExtResource("5_sd2ej"), ExtResource("6_dnsp1"), ExtResource("7_ilgax")]
 uiBox = NodePath("CloudBox")
 
@@ -110,3 +114,11 @@ volume_db = -0.3
 [node name="RodinHandler" type="Node" parent="." node_paths=PackedStringArray("rodin")]
 script = ExtResource("13_sd2ej")
 rodin = NodePath("../RodinGenerator")
+
+[node name="WinSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_dnsp1")
+volume_db = -1.0
+
+[node name="FailSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_mcdcf")
+volume_db = 0.5
