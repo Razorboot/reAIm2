@@ -4,9 +4,8 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0pwow2ri6ysu"
 path.s3tc="res://.godot/imported/base_basic_pbr_texture_diffuse.png-ef9ccaafde055e3def88ca69699aa913.s3tc.ctex"
-path.etc2="res://.godot/imported/base_basic_pbr_texture_diffuse.png-ef9ccaafde055e3def88ca69699aa913.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -16,7 +15,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/island/base_basic_pbr_texture_diffuse.png"
-dest_files=["res://.godot/imported/base_basic_pbr_texture_diffuse.png-ef9ccaafde055e3def88ca69699aa913.s3tc.ctex", "res://.godot/imported/base_basic_pbr_texture_diffuse.png-ef9ccaafde055e3def88ca69699aa913.etc2.ctex"]
+dest_files=["res://.godot/imported/base_basic_pbr_texture_diffuse.png-ef9ccaafde055e3def88ca69699aa913.s3tc.ctex"]
 
 [params]
 

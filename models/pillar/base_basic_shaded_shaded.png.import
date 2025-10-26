@@ -4,9 +4,8 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://8idp383fdyrq"
 path.s3tc="res://.godot/imported/base_basic_shaded_shaded.png-a69d97dc7cc7a537027c5bf1cfeedf60.s3tc.ctex"
-path.etc2="res://.godot/imported/base_basic_shaded_shaded.png-a69d97dc7cc7a537027c5bf1cfeedf60.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -16,7 +15,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/pillar/base_basic_shaded_shaded.png"
-dest_files=["res://.godot/imported/base_basic_shaded_shaded.png-a69d97dc7cc7a537027c5bf1cfeedf60.s3tc.ctex", "res://.godot/imported/base_basic_shaded_shaded.png-a69d97dc7cc7a537027c5bf1cfeedf60.etc2.ctex"]
+dest_files=["res://.godot/imported/base_basic_shaded_shaded.png-a69d97dc7cc7a537027c5bf1cfeedf60.s3tc.ctex"]
 
 [params]
 

@@ -4,9 +4,8 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdfaycr4s6p8n"
 path.s3tc="res://.godot/imported/base_basic_shaded_shaded.png-b72cb348853a1553b7c1c5119c9ce736.s3tc.ctex"
-path.etc2="res://.godot/imported/base_basic_shaded_shaded.png-b72cb348853a1553b7c1c5119c9ce736.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -16,7 +15,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/house/base_basic_shaded_shaded.png"
-dest_files=["res://.godot/imported/base_basic_shaded_shaded.png-b72cb348853a1553b7c1c5119c9ce736.s3tc.ctex", "res://.godot/imported/base_basic_shaded_shaded.png-b72cb348853a1553b7c1c5119c9ce736.etc2.ctex"]
+dest_files=["res://.godot/imported/base_basic_shaded_shaded.png-b72cb348853a1553b7c1c5119c9ce736.s3tc.ctex"]
 
 [params]
 

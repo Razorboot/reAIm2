@@ -4,9 +4,8 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bd43ksubuti86"
 path.s3tc="res://.godot/imported/base_basic_pbr_texture_normal.png-ad9bdbb4a7d6f5953724ce5fb0558b6c.s3tc.ctex"
-path.etc2="res://.godot/imported/base_basic_pbr_texture_normal.png-ad9bdbb4a7d6f5953724ce5fb0558b6c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -16,7 +15,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/house/base_basic_pbr_texture_normal.png"
-dest_files=["res://.godot/imported/base_basic_pbr_texture_normal.png-ad9bdbb4a7d6f5953724ce5fb0558b6c.s3tc.ctex", "res://.godot/imported/base_basic_pbr_texture_normal.png-ad9bdbb4a7d6f5953724ce5fb0558b6c.etc2.ctex"]
+dest_files=["res://.godot/imported/base_basic_pbr_texture_normal.png-ad9bdbb4a7d6f5953724ce5fb0558b6c.s3tc.ctex"]
 
 [params]
 
