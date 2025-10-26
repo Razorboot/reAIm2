@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://5k3op10evhou"]
+
+[ext_resource type="Script" uid="uid://crwnwac7wpxmi" path="res://classes/rodin_gen_2_loader.gd" id="1_6kdt6"]
+
+[node name="RodinGenerator" type="Node3D"]
+script = ExtResource("1_6kdt6")

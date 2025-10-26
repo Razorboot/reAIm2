@@ -4,6 +4,8 @@ extends Node
 ## Variables
 enum {STATE_SEARCHING, STATE_INTERACTING, STATE_END_INTERACTION, STATE_DISABLED}
 
+var stress_meter: float = 0.0
+var dream_shards: int = 0
 
 ## Functions
 func calculate_dt(dt):
