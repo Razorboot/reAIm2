@@ -1,4 +1,4 @@
-[gd_scene load_steps=0 format=3 uid="uid://3ml7cwjcpn6o"]
+[gd_scene format=3 uid="uid://3ml7cwjcpn6o"]
 
 [node name="MainUI" type="Control"]
 layout_mode = 3
@@ -8,11 +8,30 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="Dialogue" type="VBoxContainer" parent="."]
+layout_direction = 2
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Dialogue"]
 layout_mode = 2
-size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="Dialogue/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Dialogue/HBoxContainer/TextureRect"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Dialogue"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Dialogue/HBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Dialogue/HBoxContainer2/TextureRect"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
