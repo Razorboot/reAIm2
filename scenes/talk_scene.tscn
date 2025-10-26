@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://d37w0ba7aalsx"]
+[gd_scene load_steps=10 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
 [ext_resource type="Script" uid="uid://dmt5viv0qbgc7" path="res://classes/spring.gd" id="2_3nu70"]
 [ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
-[ext_resource type="PackedScene" uid="uid://bjft2885vdlso" path="res://models/island/island_mutable.tscn" id="3_mysb4"]
 [ext_resource type="PackedScene" uid="uid://bptdphhggxenp" path="res://models/island2/island2_mutable.tscn" id="5_3nu70"]
 [ext_resource type="PackedScene" uid="uid://bjrnc6vghj1xo" path="res://main_ui.tscn" id="5_mysb4"]
 
@@ -51,10 +50,6 @@ script = ExtResource("2_3nu70")
 [node name="house_mutable" parent="Node3D" instance=ExtResource("2_0575q")]
 transform = Transform3D(5.76, 0, 0, 0, 5.76, 0, 0, 0, 5.76, 3.163342, 0, -9.662644)
 
-[node name="island_mutable" parent="Node3D" instance=ExtResource("3_mysb4")]
-transform = Transform3D(11.11, 0, 0, 0, 11.11, 0, 0, 0, 11.11, 0.4336753, -19.00859, -3.5759342)
-visible = false
-
 [node name="island_mutable2" parent="Node3D" instance=ExtResource("5_3nu70")]
 transform = Transform3D(11.505, 0, 0, 0, 11.505, 0, 0, 0, 11.505, 0.45139408, -13.527349, -3.257925)
 
@@ -64,9 +59,12 @@ fov = 27.1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera3D"]
 
-[node name="MainUI" parent="Camera3D/CanvasLayer" node_paths=PackedStringArray("msPea", "peaSpring") instance=ExtResource("5_mysb4")]
+[node name="MainUI" parent="Camera3D/CanvasLayer" node_paths=PackedStringArray("msPea", "peaSpring", "Cam", "CamStart", "CamEnd") instance=ExtResource("5_mysb4")]
 msPea = NodePath("../../../Node3D/ms_pea_mutable")
 peaSpring = NodePath("../../../Node3D/ms_pea_mutable/Spring")
+Cam = NodePath("../..")
+CamStart = NodePath("../../../CamStart")
+CamEnd = NodePath("../../../CamEnd")
 start_text = "A player was cloud hopping and happened to land on Ms. Pea (Your) floating island. Ms. Pea loves to entertain guests who come by with a special game that she calls cloudy clues!"
 time_passed_multiplier = 13.0
 
@@ -77,3 +75,9 @@ environment = SubResource("Environment_3nu70")
 transform = Transform3D(0.4441817, 0.63352305, -0.63352305, 1.9963737e-09, 0.7071068, 0.7071068, 0.8959368, -0.31408396, 0.31408396, 0, 0, 0)
 light_color = Color(0.75124985, 0.5790385, 0.42466447, 1)
 shadow_enabled = true
+
+[node name="CamEnd" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45819232, 2.3006666, 10.033923)
+
+[node name="CamStart" type="Node3D" parent="."]
+transform = Transform3D(0.72371435, -0.32494953, 0.60880655, 1.4901161e-08, 0.88220084, 0.47087333, -0.6900996, -0.34077778, 0.6384614, 13.270394, 10.838104, 10.033923)

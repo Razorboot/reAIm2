@@ -2,6 +2,8 @@ extends Control
 
 # --- External refs ---
 @export var chat: NarratorBackend
+@export var rodin: RodinGen2Loader
+
 @export var chatLabel: RichTextLabel
 @export var editLabel: TextEdit
 @export var continueButton: Button
@@ -9,6 +11,15 @@ extends Control
 @export var voiceBitPlayer: AudioStreamPlayer
 @export var voiceBitSounds: Array            # Array[AudioStream]
 @export var peaSpring: Node3D
+@export var uiBox: TextureRect
+
+@export var Cam: Camera3D
+@export var CamStart: Node3D
+@export var CamEnd: Node3D
+
+# --- Cinematic tuning ---
+@export var cam_move_time: float = 2.5
+@export var ui_fade_time: float = 0.6
 
 # --- Typewriter tuning ---
 @export var chars_per_sec: float = 30.0
@@ -26,6 +37,9 @@ extends Control
 # Visual wobble
 @export var time_passed_multiplier: float = 1.0
 @export var scale_multiplier: float = 0.1
+
+# Other
+var _guess_object: String = ""
 
 # --- Internal typewriter state ---
 var _full_text := ""
@@ -64,14 +78,47 @@ func _ready() -> void:
 
 	# Button
 	continueButton.pressed.connect(_on_continue_pressed)
-	continueButton.disabled = false
+	continueButton.disabled = true  # disabled during intro
 
 	# UI setup
 	editLabel.visible = false
 	editLabel.text = ""
 	_set_continue_text("Skip")
 
-	# Start fresh conversation and kick off the intro
+	# Make UI transparent before the cinematic
+	if uiBox:
+		var c := uiBox.modulate
+		uiBox.modulate = Color(c.r, c.g, c.b, 0.0)
+
+	# Kick off the intro cinematic, then start the chat
+	await _run_opening_cinematic()
+	await _start_chat_intro()
+
+func _run_opening_cinematic() -> void:
+	if Cam == null or CamStart == null or CamEnd == null:
+		if uiBox:
+			var tw := create_tween()
+			tw.tween_property(uiBox, "modulate:a", 1.0, ui_fade_time) \
+				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			await tw.finished
+		return
+
+	Cam.global_transform = CamStart.global_transform
+
+	var cam_tw := create_tween().set_parallel(true)
+	cam_tw.tween_property(Cam, "global_position", CamEnd.global_position, cam_move_time) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	cam_tw.tween_property(Cam, "global_rotation_degrees", CamEnd.global_rotation_degrees, cam_move_time) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	await cam_tw.finished
+
+	if uiBox:
+		var tw := create_tween()
+		tw.tween_property(uiBox, "modulate:a", 1.0, ui_fade_time) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		await tw.finished
+
+func _start_chat_intro() -> void:
 	chat.reset_conversation()
 	_state = State.AIWait
 	_start_typewriter("Ms. Pea is thinking...")
@@ -81,11 +128,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time_passed += delta * time_passed_multiplier
 
-	# typewriter when we’re rendering NPC text
 	if _state == State.Intro or _state == State.AIDisplay:
 		_typewriter_tick(delta)
 
-	# squash & stretch
 	if _is_typing():
 		var pWave: float = sin(_time_passed) * scale_multiplier
 		var pWaveHalf: float = sin(_time_passed * 0.5) * scale_multiplier
@@ -99,26 +144,22 @@ func _process(delta: float) -> void:
 # Button behavior (Skip → reveal, click again → advance)
 # ------------------------------------------------
 func _on_continue_pressed() -> void:
-	# 1) If text is still typing → reveal all
 	if _is_typing():
 		_reveal_all()
 		_just_revealed = true
 		return
 
-	# 2) If we just revealed on the last click → this click advances
 	if _just_revealed:
 		_just_revealed = false
 		_advance_after_reveal()
 		return
 
-	# 3) Otherwise advance based on state
 	match _state:
 		State.Intro, State.AIDisplay:
 			_goto_theme_input()
 		State.ThemeInput:
-			_submit_input()   # handles theme vs questions
+			_submit_input()
 		State.AIWait:
-			# do nothing (still thinking)
 			pass
 
 func _advance_after_reveal() -> void:
@@ -135,8 +176,14 @@ func _advance_after_reveal() -> void:
 # ------------------------------------------------
 func _on_reply_ready(t: String) -> void:
 	continueButton.disabled = false
+
+	# >>> NEW: parse [bracketed] secret and strip it from text
+	var parsed := _extract_guess_and_strip(t)
+	if parsed.has("text"):
+		t = parsed["text"]
+
 	_start_typewriter(t)
-	# Intro (first reply) vs normal back-and-forth
+
 	if _state == State.AIWait and not _has_theme:
 		_state = State.Intro
 	else:
@@ -150,6 +197,45 @@ func _on_chat_error(msg: String) -> void:
 	_set_continue_text("Skip")
 
 # ------------------------------------------------
+# Bracket parsing helpers
+# ------------------------------------------------
+func _extract_guess_and_strip(src: String) -> Dictionary:
+	# Finds the FIRST [ ... ] block, saves sanitized inside to _guess_object,
+	# then removes ALL bracketed blocks from the rendered text and tidies whitespace.
+	var re := RegEx.new()
+	re.compile("\\[([^\\]]+)\\]")  # capture content inside [ ]
+
+	var match := re.search(src)
+	if match:
+		var raw_inside := match.get_string(1)
+		_guess_object = _sanitize_guess(raw_inside)
+
+		# Remove ALL bracketed sections from display text
+		var stripped := re.sub(src, "", true)
+
+		# Collapse excessive whitespace and trim
+		var ws := RegEx.new()
+		ws.compile("\\s{2,}")
+		stripped = ws.sub(stripped, " ", true).strip_edges()
+
+		# Optional: debug print
+		# print("Guess object set to: ", _guess_object)
+		
+		print("GUESS OBJECT IS: " + _guess_object)
+
+		return {"text": stripped, "found": true}
+
+	# No bracket found → leave text alone
+	return {"text": src, "found": false}
+
+func _sanitize_guess(s: String) -> String:
+	# Lowercase, then remove everything except a–z and 0–9
+	var lower := s.to_lower()
+	var re := RegEx.new()
+	re.compile("[^a-z0-9]+")
+	return re.sub(lower, "", true)
+
+# ------------------------------------------------
 # State transitions
 # ------------------------------------------------
 func _goto_theme_input() -> void:
@@ -157,31 +243,25 @@ func _goto_theme_input() -> void:
 	chatLabel.visible = false
 	editLabel.visible = true
 	editLabel.grab_focus()
-	_set_continue_text("Ask" if  _has_theme else "Send")
+	_set_continue_text("Ask" if _has_theme else "Send")
 
-# Handles BOTH the initial theme AND subsequent questions.
 func _submit_input() -> void:
 	var text := editLabel.text.strip_edges()
 	if text.length() == 0:
 		return
 
-	# Initial theme
 	if not _has_theme:
 		if text.length() > THEME_CHAR_MAX:
 			text = text.substr(0, THEME_CHAR_MAX)
 		_chosen_theme = text
 		_has_theme = true
-
-		# Pin the theme into backend memory and trigger Ms. Pea's themed intro
 		chat.set_theme(_chosen_theme)
 		_send_ai_and_wait("The theme is: " + _chosen_theme)
 		return
 
-	# Subsequent questions → normal chat turns (memory already contains theme)
 	_send_ai_and_wait(text)
 
 func _send_ai_and_wait(outgoing: String) -> void:
-	# Clear input, show thinking, go to AIWait
 	editLabel.clear()
 	editLabel.visible = false
 	chatLabel.visible = true
