@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://k5e4ilvtdpdi"]
+
+[ext_resource type="PackedScene" uid="uid://cgvou5hh6tol6" path="res://models/pillar/base_basic_pbr.glb" id="1_1sni6"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_67jck"]
+size = Vector3(1, 2.4174805, 1)
+
+[node name="base_basic_pbr" instance=ExtResource("1_1sni6")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70874023, 0)
+shape = SubResource("BoxShape3D_67jck")
