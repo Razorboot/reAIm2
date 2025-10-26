@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://pd3ps1y5sr1o"]
+
+[ext_resource type="PackedScene" uid="uid://cx3xm3a1ikeao" path="res://models/bunny/base_basic_shaded.glb" id="1_dn1ik"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2j5vh"]
+size = Vector3(0.574646, 0.9510193, 0.4064026)
+
+[node name="ms_pea_mutable" instance=ExtResource("1_dn1ik")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1.9926109, 0, 0, 0, 1.9926109, 0, 0, 0, 1.9926109, -0.016236171, 0.88918924, 0.022469176)
+shape = SubResource("BoxShape3D_2j5vh")

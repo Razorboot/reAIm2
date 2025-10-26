@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://d37w0ba7aalsx"]
+
+[ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
+
+[node name="TalkScene" type="Node3D"]
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(16.993633, 0, 0, 0, 0.14844136, 0, 0, 0, 20.706955, 0, 0, 0)
+mesh = SubResource("BoxMesh_y3o7c")
+
+[node name="ms_pea_mutable" parent="Node3D" instance=ExtResource("1_tgu6w")]
+transform = Transform3D(1.614795, 0, 0, 0, 1.614795, 0, 0, 0, 1.614795, -0.39942026, 0.078179, 2.8050494)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48515478, 2.1326308, 7.334986)
+fov = 38.6
