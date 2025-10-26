@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://c7v4uatqw0rue"]
+[gd_scene load_steps=11 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
 [ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
 [ext_resource type="PackedScene" uid="uid://bjft2885vdlso" path="res://models/island/island_mutable.tscn" id="3_mysb4"]
 [ext_resource type="PackedScene" uid="uid://cb45sunae54l1" path="res://models/girl_character/girl_mutable.tscn" id="4_3nu70"]
-[ext_resource type="PackedScene" uid="uid://bjrnc6vghj1xo" path="res://main_ui.tscn" id="5_mysb4"]
+[ext_resource type="PackedScene" uid="uid://bptdphhggxenp" path="res://models/island2/island2_mutable.tscn" id="5_3nu70"]
+[ext_resource type="PackedScene" uid="uid://3ml7cwjcpn6o" path="res://main_ui.tscn" id="5_mysb4"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
 
@@ -42,20 +43,24 @@ visible = false
 mesh = SubResource("BoxMesh_y3o7c")
 
 [node name="ms_pea_mutable" parent="Node3D" instance=ExtResource("1_tgu6w")]
-transform = Transform3D(1.5830929, 0, 0.31840253, 0, 1.6147952, 0, -0.31840253, 0, 1.5830929, -1.1903647, 0.078179, 3.982648)
+transform = Transform3D(1.5830929, 0, 0.31840253, 0, 1.6147952, 0, -0.31840253, 0, 1.5830929, -1.1903647, 0.3552047, 3.982648)
 
 [node name="house_mutable" parent="Node3D" instance=ExtResource("2_0575q")]
 transform = Transform3D(5.76, 0, 0, 0, 5.76, 0, 0, 0, 5.76, 3.163342, 0, -9.662644)
 
 [node name="island_mutable" parent="Node3D" instance=ExtResource("3_mysb4")]
 transform = Transform3D(11.11, 0, 0, 0, 11.11, 0, 0, 0, 11.11, 0.4336753, -19.00859, -3.5759342)
+visible = false
 
 [node name="base" parent="Node3D" instance=ExtResource("4_3nu70")]
 transform = Transform3D(1.27, 0, 0, 0, 1.27, 0, 0, 0, 1.27, -0.07044315, 0.033503413, 2.7393165)
 visible = false
 
+[node name="island_mutable2" parent="Node3D" instance=ExtResource("5_3nu70")]
+transform = Transform3D(11.505, 0, 0, 0, 11.505, 0, 0, 0, 11.505, 0.45139408, -13.527349, -3.257925)
+
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45819232, 2.279611, 10.033923)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45819232, 2.3006666, 10.033923)
 fov = 27.1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera3D"]
