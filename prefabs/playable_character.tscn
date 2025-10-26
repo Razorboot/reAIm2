@@ -43,5 +43,10 @@ offset_top = -77.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="VBoxContainer" type="VBoxContainer" parent="Spine/Neck/Camera3D/Control"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 500.0
+
 [node name="Interactor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67259, 0)

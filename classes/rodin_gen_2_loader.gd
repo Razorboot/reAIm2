@@ -2,9 +2,9 @@ extends Node3D
 class_name RodinGen2Loader
 
 const RODIN_API_BASE := "https://api.hyper3d.com/api/v2"
-const API_KEY := "6U224eE8QxWEQtSsSbGLb6TWvzjjMKAf4D7nFlozQPrUyfW7cgiKkKQGdQNzOMoN"        # <-- don't ship hard-coded keys
+const API_KEY := "6U224eE8QxWEQtSsSbGLb6TWvzjjMKAf4D7nFlozQPrUyfW7cgiKkKQGdQNzOMoN" # rotate / do not commit
 const POLL_INTERVAL_SEC := 3.0
-const TRI_BUDGET := 2000               # target triangle count
+const TRI_BUDGET := 2000        # target triangle count
 
 signal generation_started(task_uuid: String, subscription_key: String)
 signal generation_progress(status: String)
@@ -49,8 +49,11 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 			return null
 		await get_tree().create_timer(POLL_INTERVAL_SEC).timeout
 
-	# 3) Download list (try both identifiers)
-	var entries := await _download_results(task_uuid, subscription_key)
+	# Give Rodin a moment to publish files before first /download
+	await get_tree().create_timer(1.0).timeout
+
+	# 3) Download list — ONLY task_uuid with robust retry (avoid NO_SUCH_TASK)
+	var entries := await _download_results_with_retry(task_uuid)
 	if entries.is_empty():
 		emit_signal("generation_failed", "No downloadable files.")
 		return null
@@ -58,34 +61,40 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 	# 4) Choose asset URL
 	var asset_url := ""
 	var asset_type := ""  # "glb" | "gltf" | "zip"
+
 	for e in entries:
-		if typeof(e) != TYPE_DICTIONARY: continue
+		if typeof(e) != TYPE_DICTIONARY:
+			continue
 		var fname := str(e.get("name", "")).to_lower()
 		var url := str(e.get("url", ""))
 		if fname.ends_with(".glb") or url.ends_with(".glb"):
-			asset_url = url; asset_type = "glb"; break
+			asset_url = url
+			asset_type = "glb"
+			break
 		if fname.ends_with(".gltf") or url.ends_with(".gltf"):
-			asset_url = url; asset_type = "gltf"; break
+			asset_url = url
+			asset_type = "gltf"
+			break
+
 	if asset_url == "":
 		for e in entries:
-			if typeof(e) != TYPE_DICTIONARY: continue
-			var fname := str(e.get("name", "")).to_lower()
-			var url := str(e.get("url", ""))
-			if fname.ends_with(".zip") or url.ends_with(".zip"):
-				asset_url = url; asset_type = "zip"; break
+			if typeof(e) != TYPE_DICTIONARY:
+				continue
+			var fname2 := str(e.get("name", "")).to_lower()
+			var url2 := str(e.get("url", ""))
+			if fname2.ends_with(".zip") or url2.ends_with(".zip"):
+				asset_url = url2
+				asset_type = "zip"
+				break
 
 	if asset_url == "":
 		emit_signal("generation_failed", "No .glb/.gltf/.zip in download list.")
 		return null
 
-	# 5) Save destination: prefer res://user_models in editor; user://user_models otherwise
-	var base_dir := ""
-	if Engine.is_editor_hint():
-		base_dir = "res://user_models"
-	else:
-		base_dir = "user://user_models"
+	# 5) Save to user_models/<uuid>
+	# For exported games, prefer: var base_dir := "user://user_models"
+	var base_dir := "res://user_models"
 	DirAccess.make_dir_recursive_absolute(base_dir)
-
 	var job_dir := "%s/%s" % [base_dir, task_uuid]
 	DirAccess.make_dir_recursive_absolute(job_dir)
 
@@ -108,13 +117,13 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 			return null
 
 	# 6) Load & instance under the **root** scene
-	var scene = _load_glb_scene(model_path)
+	var scene: PackedScene = _load_glb_scene(model_path)
 	if scene == null:
 		emit_signal("generation_failed", "GLB/GLTF parse failed.")
 		return null
 
-	var inst = scene.instantiate()
-	var inst3d: Node3D = inst as Node3D
+	var inst := scene.instantiate()
+	var inst3d := inst as Node3D
 	if inst3d == null:
 		var wrap := Node3D.new()
 		wrap.name = "RodinModel"
@@ -125,7 +134,12 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 
 	var root_scene := get_tree().current_scene
 	if root_scene == null:
-		root_scene = get_tree().root.get_child(get_tree().root.get_child_count()-1)
+		# fallback to last child of root if current_scene is null
+		var rc := get_tree().root.get_child_count()
+		if rc > 0:
+			root_scene = get_tree().root.get_child(rc - 1)
+		else:
+			root_scene = self
 	root_scene.add_child(inst3d)
 
 	emit_signal("generation_completed", model_path, inst3d)
@@ -139,17 +153,18 @@ func _submit_generation(prompt: String, quality: String, mesh_mode: String) -> D
 	add_child(http)
 
 	var url := "%s/rodin" % RODIN_API_BASE
-	# Triangle budget knobs: we include several common keys; server will accept those it knows.
+	# preview_render=true to ensure a preview.webp appears
 	var fields := {
 		"tier": "Gen-2",
 		"prompt": prompt,
 		"geometry_file_format": "glb",
 		"material": "PBR",
-		"quality": quality,                 # "low" for speed
-		"mesh_mode": mesh_mode,             # "Quad" for nicer topology
+		"quality": quality,          # "low" for speed
+		"mesh_mode": mesh_mode,      # "Quad" for nicer topology
 		"max_triangles": TRI_BUDGET,
 		"triangle_budget": TRI_BUDGET,
-		"max_triangle_count": TRI_BUDGET
+		"max_triangle_count": TRI_BUDGET,
+		"preview_render": "true"
 	}
 	var mp := _encode_multipart(fields)
 	var headers := PackedStringArray([
@@ -217,16 +232,24 @@ func _check_status(subscription_key: String) -> String:
 		return str(jobs["status"])
 	return ""
 
-func _download_results(task_uuid: String, subscription_key: String) -> Array:
-	# Try task_uuid
-	var a := await _download_results_by({"task_uuid": task_uuid}, "DOWNLOAD(task_uuid)")
-	if not a.is_empty():
-		return a
-	# Try subscription_key
-	var b := await _download_results_by({"subscription_key": subscription_key}, "DOWNLOAD(subscription_key)")
-	return b
+# Retry: ONLY task_uuid, longer backoff, tries {"task_uuid":...} and {"uuid":...}
+func _download_results_with_retry(task_uuid: String) -> Array:
+	var attempts := [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0]  # seconds
+	for i in range(attempts.size() + 1):
+		var entries := await _download_results_once(task_uuid, false)
+		if entries.is_empty():
+			entries = await _download_results_once(task_uuid, true)
+		if not entries.is_empty():
+			return entries
 
-func _download_results_by(payload: Dictionary, tag := "DOWNLOAD") -> Array:
+		if i == attempts.size():
+			break
+		var delay = attempts[i]
+		_print_http("DOWNLOAD retry", "empty list; sleeping", str(delay) + "s")
+		await get_tree().create_timer(delay).timeout
+	return []
+
+func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
 	var http := HTTPRequest.new()
 	add_child(http)
 
@@ -236,13 +259,23 @@ func _download_results_by(payload: Dictionary, tag := "DOWNLOAD") -> Array:
 		"Content-Type: application/json",
 		"accept: application/json"
 	])
+
+	var payload := {}
+	if use_alt_key:
+		payload = {"uuid": task_uuid}
+	else:
+		payload = {"task_uuid": task_uuid}
 	var body := JSON.stringify(payload)
 
-	_print_http("%s ->" % tag, url, headers, body)
+	var tag := "DOWNLOAD(uuid)"
+	if not use_alt_key:
+		tag = "DOWNLOAD(task_uuid)"
+
+	_print_http(tag + " ->", url, headers, body)
 	var err := http.request(url, headers, HTTPClient.METHOD_POST, body)
 	if err != OK:
 		remove_child(http); http.queue_free()
-		_print_http("%s ERR" % tag, str(err))
+		_print_http("DOWNLOAD ERR", str(err))
 		return []
 
 	var res = await http.request_completed
@@ -251,7 +284,7 @@ func _download_results_by(payload: Dictionary, tag := "DOWNLOAD") -> Array:
 	var code: int = res[1]
 	var bytes: PackedByteArray = res[3]
 	var text := bytes.get_string_from_utf8()
-	_print_http("%s <-" % tag, "HTTP %d" % code, text)
+	_print_http(tag + " <-", "HTTP %d" % code, text)
 
 	if code != 200 and code != 201:
 		return []
@@ -259,14 +292,22 @@ func _download_results_by(payload: Dictionary, tag := "DOWNLOAD") -> Array:
 	var data = JSON.parse_string(text)
 	if typeof(data) != TYPE_DICTIONARY:
 		return []
+
+	# Accept several shapes
 	if data.has("list") and data["list"] is Array:
 		return data["list"]
 	if data.has("files") and data["files"] is Array:
 		return data["files"]
 	if data.has("results") and data["results"] is Array:
 		return data["results"]
-	return []
 
+	# Fallback: some tenants expose only a preview URL
+	if data.has("preview_url"):
+		return [ {"name":"preview.webp", "url": str(data["preview_url"])} ]
+	if data.has("preview") and typeof(data["preview"]) == TYPE_DICTIONARY and data["preview"].has("url"):
+		return [ {"name":"preview.webp", "url": str(data["preview"]["url"])} ]
+
+	return []
 
 func _download_file(url: String, save_path: String) -> bool:
 	var http := HTTPRequest.new()
@@ -322,14 +363,16 @@ func _extract_first_3d_from_zip(zip_path: String, out_dir: String) -> String:
 			chosen = p
 			break
 	if chosen == "":
-		zr.close(); return ""
+		zr.close()
+		return ""
 	var bytes := zr.read_file(chosen)
 	zr.close()
 
 	var ext := chosen.get_extension().to_lower()
 	var out_path := "%s/extracted.%s" % [out_dir, ext]
 	var f := FileAccess.open(out_path, FileAccess.WRITE)
-	if f == null: return ""
+	if f == null:
+		return ""
 	f.store_buffer(bytes)
 	f.close()
 	return out_path
@@ -340,7 +383,7 @@ func _auto_place(root: Node3D) -> void:
 		var center := aabb.position + aabb.size * 0.5
 		root.translate(-center)
 		var target := 1.5
-		var longest = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
+		var longest: float = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
 		if longest > 0.0001:
 			root.scale = Vector3.ONE * (target / longest)
 
@@ -348,9 +391,9 @@ func _compute_aabb(node: Node) -> AABB:
 	var merged := AABB()
 	var first := true
 	if node is MeshInstance3D:
-		var mesh = node.mesh
+		var mesh: Mesh = node.mesh
 		if mesh:
-			var m_aabb = mesh.get_aabb()
+			var m_aabb := mesh.get_aabb()
 			m_aabb = m_aabb * (node as Node3D).global_transform
 			merged = m_aabb
 			first = false
@@ -358,7 +401,8 @@ func _compute_aabb(node: Node) -> AABB:
 		var a := _compute_aabb(c)
 		if a.size != Vector3.ZERO:
 			if first:
-				merged = a; first = false
+				merged = a
+				first = false
 			else:
 				merged = merged.merge(a)
 	return merged
@@ -386,20 +430,20 @@ func _encode_multipart(fields: Dictionary) -> Dictionary:
 # ---------------- Logging helper ----------------
 
 func _print_http(tag: String, a: Variant = "", b: Variant = "", c: Variant = "") -> void:
-	var pieces: Array[String] = []
+	var parts: Array[String] = []
 	for v in [a, b, c]:
 		if v == null:
 			continue
 		var s := ""
 		if typeof(v) == TYPE_PACKED_STRING_ARRAY:
-			s = ",".join(v)                # pretty-print headers
+			s = ",".join(v)                # headers
 		elif typeof(v) == TYPE_DICTIONARY:
 			s = JSON.stringify(v)
 		else:
 			s = str(v)
 		if s != "":
-			pieces.append(s)
+			parts.append(s)
 	var line := "[color=gray]" + tag + "[/color]"
-	if pieces.size() > 0:
-		line += " " + " | ".join(pieces)
+	if parts.size() > 0:
+		line += " " + " | ".join(parts)
 	print_rich(line)
