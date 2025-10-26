@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://dmuw0bkm6h0qb"]
+[gd_scene load_steps=3 format=3 uid="uid://bs1m0hahlqiea"]
 
 [ext_resource type="PackedScene" uid="uid://bjj5uoiak2vgs" path="res://models/bed_blue/base_basic_pbr.glb" id="1_do45k"]
 
@@ -6,10 +6,12 @@
 size = Vector3(1.3339844, 0.95166016, 1.824646)
 
 [node name="BlueBed" instance=ExtResource("1_do45k")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+[node name="model" parent="." index="0"]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+[node name="StaticBody3D" type="StaticBody3D" parent="model" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="model/StaticBody3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0048828125, 0.5124512, -0.008148193)
 shape = SubResource("BoxShape3D_do45k")

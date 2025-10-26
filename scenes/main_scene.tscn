@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://b5bxch75s2rvu"]
 
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_w2twt"]
-[ext_resource type="PackedScene" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://bs1m0hahlqiea" path="res://models/bed_blue/blue_bed_mutable.tscn" id="3_pu3yx"]
 [ext_resource type="PackedScene" uid="uid://beblh8riohp5a" path="res://models/analog_clock/analog_mutable.tscn" id="4_gubc5"]
 [ext_resource type="PackedScene" uid="uid://ve4j7hyatvox" path="res://models/desk_room/desk_mutable.tscn" id="4_pu3yx"]
 
@@ -57,7 +57,7 @@ transform = Transform3D(0.49999997, 0.61237246, -0.61237246, 0, 0.7071068, 0.707
 shadow_enabled = true
 
 [node name="BlueBed" parent="." instance=ExtResource("3_pu3yx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2613363, 0, 2.1361208)
 
 [node name="DeskRoom" parent="." instance=ExtResource("4_pu3yx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.055, 0, 5.637)
