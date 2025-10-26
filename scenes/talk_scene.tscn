@@ -1,29 +1,24 @@
-[gd_scene load_steps=10 format=3 uid="uid://d37w0ba7aalsx"]
+[gd_scene load_steps=11 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
 [ext_resource type="Script" uid="uid://dmt5viv0qbgc7" path="res://classes/spring.gd" id="2_3nu70"]
 [ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
 [ext_resource type="PackedScene" uid="uid://bptdphhggxenp" path="res://models/island2/island2_mutable.tscn" id="5_3nu70"]
 [ext_resource type="PackedScene" uid="uid://bjrnc6vghj1xo" path="res://main_ui.tscn" id="5_mysb4"]
+[ext_resource type="Texture2D" uid="uid://cpeu0db4375bn" path="res://images/cloud sky/sky_36_2k.png" id="6_3nu70"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mysb4"]
-sky_top_color = Color(0.0015074585, 0.0115730595, 0.03426954, 1)
-sky_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
-sky_curve = 0.55981976
-ground_bottom_color = Color(0.05330111, 0.13122624, 0.18335637, 1)
-ground_horizon_color = Color(0.16868043, 0.24643612, 0.3439806, 1)
-ground_curve = 0.06276674
-ground_energy_multiplier = 1.5
-sun_angle_max = 46.55
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qk45w"]
+panorama = ExtResource("6_3nu70")
 
-[sub_resource type="Sky" id="Sky_7ykc4"]
-sky_material = SubResource("ProceduralSkyMaterial_mysb4")
+[sub_resource type="Sky" id="Sky_3hy4n"]
+sky_material = SubResource("PanoramaSkyMaterial_qk45w")
+process_mode = 1
 
 [sub_resource type="Environment" id="Environment_3nu70"]
 background_mode = 2
-sky = SubResource("Sky_7ykc4")
+sky = SubResource("Sky_3hy4n")
 ambient_light_source = 2
 ambient_light_color = Color(0.22255391, 0.46543193, 0.67493576, 1)
 ambient_light_energy = 0.46
