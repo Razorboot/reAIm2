@@ -69,7 +69,6 @@ msPea = NodePath("../../../Node3D/ms_pea_mutable")
 peaSpring = NodePath("../../../Node3D/ms_pea_mutable/Spring")
 start_text = "A player was cloud hopping and happened to land on Ms. Pea (Your) floating island. Ms. Pea loves to entertain guests who come by with a special game that she calls cloudy clues!"
 time_passed_multiplier = 13.0
-scale_multiplier = 0.1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_3nu70")

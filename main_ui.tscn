@@ -1,12 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://bjrnc6vghj1xo"]
+[gd_scene load_steps=12 format=3 uid="uid://bjrnc6vghj1xo"]
 
 [ext_resource type="Texture2D" uid="uid://b1fg2apslp6e7" path="res://images/cloud_box.png" id="1_2ppmm"]
 [ext_resource type="Script" uid="uid://bl6nykv1whdqx" path="res://classes/chat_manager.gd" id="1_4uoxc"]
+[ext_resource type="AudioStream" uid="uid://0ohen3yd64nx" path="res://audio/a_sound.wav" id="2_8yam0"]
 [ext_resource type="Script" uid="uid://d7wu4q72nkhv" path="res://classes/narrator_backend.gd" id="2_ktt6o"]
 [ext_resource type="Script" uid="uid://dfqespyrsi0tm" path="res://classes/narrator_handler.gd" id="3_4uoxc"]
+[ext_resource type="AudioStream" uid="uid://d4lhv161f7oq1" path="res://audio/c_sound.wav" id="3_81ket"]
 [ext_resource type="FontFile" uid="uid://yjquut0b5cgf" path="res://fonts/FinkHeavy.ttf" id="3_llbac"]
+[ext_resource type="AudioStream" uid="uid://dpdwlvad674hu" path="res://audio/d_sound.wav" id="4_mcdcf"]
+[ext_resource type="AudioStream" uid="uid://cqwfgvdx24ylk" path="res://audio/o_sound .wav" id="5_sd2ej"]
+[ext_resource type="AudioStream" uid="uid://tq5hheqdkibk" path="res://audio/p_sound.wav" id="6_dnsp1"]
+[ext_resource type="AudioStream" uid="uid://bx6611igltm4x" path="res://audio/q_sound.wav" id="7_ilgax"]
 
-[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "chatLabel", "editLabel", "continueButton")]
+[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,6 +24,8 @@ chat = NodePath("NarratorBackend")
 chatLabel = NodePath("CloudBox/NarratorLabel")
 editLabel = NodePath("CloudBox/UserLabel")
 continueButton = NodePath("CloudBox/ContinueButton")
+voiceBitPlayer = NodePath("VoiceBitPlayer")
+voiceBitSounds = [ExtResource("2_8yam0"), ExtResource("3_81ket"), ExtResource("4_mcdcf"), ExtResource("5_sd2ej"), ExtResource("6_dnsp1"), ExtResource("7_ilgax")]
 
 [node name="CloudBox" type="TextureRect" parent="."]
 layout_mode = 1
@@ -48,9 +56,10 @@ offset_bottom = 54.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 0.8901961)
-theme_override_colors/font_placeholder_color = Color(0, 0, 0, 0.65882355)
+theme_override_colors/font_placeholder_color = Color(0.3764706, 0.23529412, 0, 0.3764706)
 theme_override_colors/background_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_llbac")
+theme_override_font_sizes/font_size = 23
 placeholder_text = "Type in  your theme here, then press 'Continue'!"
 autowrap_mode = 2
 
@@ -83,12 +92,16 @@ offset_bottom = 31.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/default_color = Color(0.025130617, 0.104868524, 0.2567247, 1)
-text = "Hi beyatch! :3"
+theme_override_font_sizes/normal_font_size = 23
 autowrap_mode = 2
 
 [node name="NarratorBackend" type="Node" parent="."]
 script = ExtResource("2_ktt6o")
+system_prompt = "You are a friendly NPC named Ms. Pea who is a cheerful, but sometimes witty and \"sassy\" but you keep your messages concise -- you're also a huge supercell video game fan, you play brawl stars and love the character jacky (since she hops) and you are a bunny (just as a fun fact)!You will ask the player to pick a theme for a game, and based on the theme you will pick an object that is easily generatable. The object will be one word and it will be the name of some existing IP or media category of that theme.You absolutely cannot tell the player what the object you picked is, but you can answer GENERAL questions (not specific) questions about the object when asked. You cannot give any hints about specifics that relate to the object which would allow the player to easily guess what the object is, but you may give hints that you deem are not specific such as color, genre, category type, or relation to some other object/some other subject. If they do ask something specific or ask for the answer, redirect the question by firmly saying you cannot answer a question like that.If the player guesses the object correctly you will return:  PLAYER_GUESSED_OBJECT"
 
 [node name="NarratorFrontend" type="Node" parent="." node_paths=PackedStringArray("chat")]
 script = ExtResource("3_4uoxc")
 chat = NodePath("../NarratorBackend")
+
+[node name="VoiceBitPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -0.3
