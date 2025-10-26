@@ -8,8 +8,8 @@ func _ready() -> void:
 	
 	rodin.generation_progress.connect(func(s): print("status:", s))
 	rodin.generation_failed.connect(func(m): push_error(m))
-	rodin.generation_completed.connect(func(path, node: Node3D):
-		node.global_position = Vector3(0, 0.5, 0)
+	rodin.generation_completed.connect(func(path, node: RigidBody3D):
+		node.global_position = Vector3(5.0, 3.0, 5.0)
 		timeThing += 1
 		if timeThing == 2:
 			var elapsed_time_sec = float(Time.get_ticks_msec() - start_time_msec) / 1000.0

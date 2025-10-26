@@ -9,9 +9,9 @@ const TRI_BUDGET := 10000
 signal generation_started(task_uuid: String, subscription_key: String)
 signal generation_progress(status: String)
 signal generation_failed(message: String)
-signal generation_completed(model_url: String, instanced_node: Node3D)
+signal generation_completed(model_url: String, instanced_node: RigidBody3D)
 
-func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: String = "Raw") -> Node3D:
+func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: String = "Raw") -> RigidBody3D:
 	# 1) Submit
 	var submit := await _submit_generation(prompt, quality, mesh_mode)
 	if typeof(submit) != TYPE_DICTIONARY or not submit.has("uuid") or not submit.has("jobs"):
@@ -93,6 +93,7 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 		inst3d = wrap
 
 	#_auto_place(inst3d)
+	var potentialBody = create_collision(inst3d)
 
 	var root_scene := get_tree().current_scene
 	if root_scene == null:
@@ -101,10 +102,11 @@ func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: St
 			root_scene = get_tree().root.get_child(rc - 1)
 		else:
 			root_scene = self
-	root_scene.add_child(inst3d)
+	#root_scene.add_child(inst3d)
+	root_scene.add_child(potentialBody)
 
-	emit_signal("generation_completed", asset_url, inst3d)
-	return inst3d
+	emit_signal("generation_completed", asset_url, potentialBody)
+	return potentialBody
 
 
 # ---------------- HTTP ----------------
@@ -324,13 +326,27 @@ func _load_glb_scene_from_bytes(bytes: PackedByteArray):
 
 	return doc.generate_scene(state)
 
-func create_collision(node: Node) -> void:
-	if node is MeshInstance3D:
-		var mesh: Mesh = node.mesh
+func create_collision(node: Node):
+	var model := node.find_child("model")
+	
+	print(model)
+	
+	print("TEST1")
+	if model:
+		print("TEST2")
+		var mesh: Mesh = model.mesh
 		if mesh:
+			print("TEST3")
 			var m_aabb: AABB = mesh.get_aabb()
-			pass
-		
+			var body: RigidBody3D = RigidBody3D.new()
+			var collisionShape = CollisionShape3D.new()
+			var boxShape = BoxShape3D.new()
+			collisionShape.shape = boxShape
+			boxShape.size = Vector3(m_aabb.size)
+			body.add_child(collisionShape)
+			node.remove_child(model)
+			body.add_child(model)
+			return body
 
 #func _auto_place(root: Node3D) -> void:
 	#var aabb := _compute_aabb(root)
