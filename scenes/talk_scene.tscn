@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://d37w0ba7aalsx"]
+[gd_scene load_steps=11 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
+[ext_resource type="Script" uid="uid://dmt5viv0qbgc7" path="res://classes/spring.gd" id="2_3nu70"]
 [ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
 [ext_resource type="PackedScene" uid="uid://bjft2885vdlso" path="res://models/island/island_mutable.tscn" id="3_mysb4"]
 [ext_resource type="PackedScene" uid="uid://bptdphhggxenp" path="res://models/island2/island2_mutable.tscn" id="5_3nu70"]
@@ -44,6 +45,9 @@ mesh = SubResource("BoxMesh_y3o7c")
 [node name="ms_pea_mutable" parent="Node3D" instance=ExtResource("1_tgu6w")]
 transform = Transform3D(1.5830929, 0, 0.31840253, 0, 1.6147952, 0, -0.31840253, 0, 1.5830929, -1.1903647, 0.3552047, 3.982648)
 
+[node name="Spring" type="Node3D" parent="Node3D/ms_pea_mutable"]
+script = ExtResource("2_3nu70")
+
 [node name="house_mutable" parent="Node3D" instance=ExtResource("2_0575q")]
 transform = Transform3D(5.76, 0, 0, 0, 5.76, 0, 0, 0, 5.76, 3.163342, 0, -9.662644)
 
@@ -60,10 +64,12 @@ fov = 27.1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera3D"]
 
-[node name="MainUI" parent="Camera3D/CanvasLayer" node_paths=PackedStringArray("msPea") instance=ExtResource("5_mysb4")]
+[node name="MainUI" parent="Camera3D/CanvasLayer" node_paths=PackedStringArray("msPea", "peaSpring") instance=ExtResource("5_mysb4")]
 msPea = NodePath("../../../Node3D/ms_pea_mutable")
-time_passed_multiplier = 10.0
-scale_multiplier = 0.05
+peaSpring = NodePath("../../../Node3D/ms_pea_mutable/Spring")
+start_text = "A player was cloud hopping and happened to land on Ms. Pea (Your) floating island. Ms. Pea loves to entertain guests who come by with a special game that she calls cloudy clues!"
+time_passed_multiplier = 13.0
+scale_multiplier = 0.1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_3nu70")

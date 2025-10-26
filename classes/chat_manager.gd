@@ -6,6 +6,8 @@ extends Control
 @export var continueButton: Button
 @export var msPea: Node3D
 
+@export var peaSpring: Node3D
+
 @export var chars_per_sec: float = 30.0
 @export var start_text := ""
 
@@ -32,7 +34,7 @@ func _ready() -> void:
 	# Connect signals to your own methods
 	chat.reply_ready.connect(_on_reply_ready)
 	chat.error.connect(_on_chat_error)
-	chat.send_message("I just started up this game! Who are you and what am I supposed to do?")
+	chat.send_message(start_text)
 
 	if continueButton:
 		continueButton.pressed.connect(_on_continue_pressed)
@@ -65,8 +67,11 @@ func _process(delta: float) -> void:
 	
 	if _visible_chars < _full_text.length():
 		_accum += delta
+		
 		var step := int(chars_per_sec * _accum)
 		if step > 0:
+			var current_char = _full_text[_visible_chars - 1]
+			
 			_accum = 0.0
 			_visible_chars = clamp(_visible_chars + step, 0, _full_text.length())
 			chatLabel.text = _full_text.substr(0, _visible_chars)
@@ -85,7 +90,9 @@ func _process(delta: float) -> void:
 func _on_continue_pressed() -> void:
 	# reveal rest instantly
 	if _chat_state == "Intro":
+		print("GG")
 		if continueButton.text == "Skip":
+			print("GG2")
 			chatLabel.text = _full_text
 			_accum = 1.0
 		else:
