@@ -1,9 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://cdfxt6na6ddqa"]
+[gd_scene load_steps=9 format=3 uid="uid://cdfxt6na6ddqa"]
 
 [ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="1_mlx0s"]
 [ext_resource type="PackedScene" uid="uid://cgtgvcl3xuv0x" path="res://prefabs/playable_character.tscn" id="1_o1hyn"]
 [ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="3_deb1l"]
-[ext_resource type="Script" uid="uid://lqm5nmrepjmg" path="res://classes/map_generator.gd" id="4_1rhhd"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_g4w0c"]
 
@@ -60,6 +59,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0785503, 0, 2.1150005)
 [node name="RodinHandler" type="Node" parent="PlayableCharacter" node_paths=PackedStringArray("rodin")]
 script = ExtResource("3_deb1l")
 rodin = NodePath("../../RodinGenerator")
-
-[node name="MapGenerator" type="Node3D" parent="."]
-script = ExtResource("4_1rhhd")

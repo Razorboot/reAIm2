@@ -4,14 +4,14 @@ class_name RodinGen2Loader
 const RODIN_API_BASE := "https://api.hyper3d.com/api/v2"
 const API_KEY := "1BfAVawDESvzWB0j8Qr88UYu74H2Y0S9W40ftmx0toTg04UZx3Uuo9O8QoYRTxRs" # rotate / do not commit
 const POLL_INTERVAL_SEC := 3.0
-const TRI_BUDGET := 1000
+const TRI_BUDGET := 10000
 
 signal generation_started(task_uuid: String, subscription_key: String)
 signal generation_progress(status: String)
 signal generation_failed(message: String)
 signal generation_completed(model_url: String, instanced_node: Node3D)
 
-func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: String = "Quad") -> Node3D:
+func generate_text_to_glb(prompt: String, quality: String = "low", mesh_mode: String = "Raw") -> Node3D:
 	# 1) Submit
 	var submit := await _submit_generation(prompt, quality, mesh_mode)
 	if typeof(submit) != TYPE_DICTIONARY or not submit.has("uuid") or not submit.has("jobs"):
@@ -120,10 +120,11 @@ func _submit_generation(prompt: String, quality: String, mesh_mode: String) -> D
 		"geometry_file_format": "glb",
 		"material": "PBR",
 		"quality": quality,
+		"quality_override": TRI_BUDGET,
 		"mesh_mode": mesh_mode,
-		"max_triangles": TRI_BUDGET,
-		"triangle_budget": TRI_BUDGET,
-		"max_triangle_count": TRI_BUDGET
+		#"max_triangles": TRI_BUDGET,
+		#"triangle_budget": TRI_BUDGET,
+		#"max_triangle_count": TRI_BUDGET
 	}
 	var mp := _encode_multipart(fields)
 	var headers := PackedStringArray([
