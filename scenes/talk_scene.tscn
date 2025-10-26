@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://d37w0ba7aalsx"]
+[gd_scene load_steps=14 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
 [ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
@@ -8,6 +8,24 @@
 [ext_resource type="PackedScene" uid="uid://3ml7cwjcpn6o" path="res://main_ui.tscn" id="5_mysb4"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3nu70"]
+albedo_color = Color(0.84087765, 0.95125705, 0.96571296, 1)
+backlight = Color(0.23834804, 0.24004993, 0.16815498, 1)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="SphereMesh" id="SphereMesh_yk8pw"]
+material = SubResource("StandardMaterial3D_3nu70")
+radius = 0.4
+height = 0.8
+
+[sub_resource type="Curve" id="Curve_rn5oh"]
+_limits = [-360.0, 360.0, 0.0, 1.0]
+_data = [Vector2(0.4011628, -44.494385), 0.0, 0.0, 0, 0, Vector2(0.889535, 295.28094), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mysb4"]
 sky_top_color = Color(0.0015074585, 0.0115730595, 0.03426954, 1)
@@ -47,6 +65,22 @@ transform = Transform3D(1.5830929, 0, 0.31840253, 0, 1.6147952, 0, -0.31840253, 
 
 [node name="house_mutable" parent="Node3D" instance=ExtResource("2_0575q")]
 transform = Transform3D(5.76, 0, 0, 0, 5.76, 0, 0, 0, 5.76, 3.163342, 0, -9.662644)
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="Node3D/house_mutable"]
+transform = Transform3D(0.745, 0, 0, 0, 0.745, 0, 0, 0, 0.745, -0.4467024, 1.6378493, -0.10422075)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_yk8pw")
+spread = 180.0
+flatness = 0.61
+gravity = Vector3(0, 7.66, 0)
+initial_velocity_min = 0.2
+initial_velocity_max = 0.2
+angular_velocity_min = 0.2
+angular_velocity_max = 0.2
+angular_velocity_curve = SubResource("Curve_rn5oh")
+damping_max = 3.092
+anim_speed_min = 4.25
+anim_speed_max = 4.25
 
 [node name="island_mutable" parent="Node3D" instance=ExtResource("3_mysb4")]
 transform = Transform3D(11.11, 0, 0, 0, 11.11, 0, 0, 0, 11.11, 0.4336753, -19.00859, -3.5759342)
