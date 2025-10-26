@@ -1,6 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://d37w0ba7aalsx"]
+[gd_scene load_steps=6 format=3 uid="uid://d37w0ba7aalsx"]
 
 [ext_resource type="PackedScene" uid="uid://pd3ps1y5sr1o" path="res://models/bunny/ms_pea.tscn" id="1_tgu6w"]
+[ext_resource type="PackedScene" uid="uid://c22xk0qkn6p8a" path="res://models/house/house_mutable.tscn" id="2_0575q"]
+[ext_resource type="PackedScene" uid="uid://bjft2885vdlso" path="res://models/island/island_mutable.tscn" id="3_mysb4"]
+[ext_resource type="PackedScene" uid="uid://cb45sunae54l1" path="res://models/girl_character/girl_mutable.tscn" id="4_3nu70"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
 
@@ -10,11 +13,22 @@
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
 transform = Transform3D(16.993633, 0, 0, 0, 0.14844136, 0, 0, 0, 20.706955, 0, 0, 0)
+visible = false
 mesh = SubResource("BoxMesh_y3o7c")
 
 [node name="ms_pea_mutable" parent="Node3D" instance=ExtResource("1_tgu6w")]
-transform = Transform3D(1.614795, 0, 0, 0, 1.614795, 0, 0, 0, 1.614795, -0.39942026, 0.078179, 2.8050494)
+transform = Transform3D(1.5830929, 0, 0.31840253, 0, 1.6147952, 0, -0.31840253, 0, 1.5830929, -0.8341446, 0.078179, 2.8050494)
+
+[node name="house_mutable" parent="Node3D" instance=ExtResource("2_0575q")]
+transform = Transform3D(7.36, 0, 0, 0, 7.36, 0, 0, 0, 7.36, 1.1655879, 0, -11.348215)
+
+[node name="island_mutable" parent="Node3D" instance=ExtResource("3_mysb4")]
+transform = Transform3D(11.11, 0, 0, 0, 11.11, 0, 0, 0, 11.11, 0.4336753, -19.00859, -3.5759342)
+
+[node name="base" parent="Node3D" instance=ExtResource("4_3nu70")]
+transform = Transform3D(1.27, 0, 0, 0, 1.27, 0, 0, 0, 1.27, -0.07044315, 0.033503413, 2.7393165)
+visible = false
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48515478, 2.1326308, 7.334986)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45819232, 2.1326308, 7.334986)
 fov = 38.6

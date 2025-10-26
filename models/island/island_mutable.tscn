@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjft2885vdlso"]
+
+[ext_resource type="PackedScene" uid="uid://sypiyg0d7v1l" path="res://models/island/base_basic_pbr.glb" id="1_7vwxy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mb35j"]
+size = Vector3(1.8356934, 2.3061523, 2.0760498)
+
+[node name="island_mutable" instance=ExtResource("1_7vwxy")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.023071289, 0.6530762, -0.06939697)
+shape = SubResource("BoxShape3D_mb35j")
