@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bptdphhggxenp" path="res://models/island2/island2_mutable.tscn" id="5_3nu70"]
 [ext_resource type="PackedScene" uid="uid://bjrnc6vghj1xo" path="res://main_ui.tscn" id="5_mysb4"]
 [ext_resource type="Texture2D" uid="uid://cpeu0db4375bn" path="res://images/cloud sky/sky_36_2k.png" id="6_3nu70"]
-[ext_resource type="PackedScene" path="res://prefabs/pillar_mutable.tscn" id="6_rn5oh"]
+[ext_resource type="PackedScene" uid="uid://k5e4ilvtdpdi" path="res://prefabs/pillar_mutable.tscn" id="6_rn5oh"]
 [ext_resource type="AudioStream" uid="uid://c2s8iibijwnpd" path="res://audio/bubbly_music.mp3" id="7_yk8pw"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_y3o7c"]
