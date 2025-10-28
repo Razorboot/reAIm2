@@ -2,7 +2,7 @@ extends Node3D
 class_name RodinGen2Loader
 
 const RODIN_API_BASE := "https://api.hyper3d.com/api/v2"
-const API_KEY := "1BfAVawDESvzWB0j8Qr88UYu74H2Y0S9W40ftmx0toTg04UZx3Uuo9O8QoYRTxRs" # rotate / do not commit
+const API_KEY := "API_KEY_HERE" # rotate
 const POLL_INTERVAL_SEC := 3.0
 const TRI_BUDGET := 10000
 
