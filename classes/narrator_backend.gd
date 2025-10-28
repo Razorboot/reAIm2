@@ -3,7 +3,7 @@ extends Node
 class_name NarratorBackend
 
 # --- Config ---
-@export var GEMINI_API_KEY: String = "AIzaSyAC8rw6U2LCXK-qhIvdmVEegfQdDSwaPoc"              # put your key in the inspector
+@export var GEMINI_API_KEY: String = "API_KEY_HERE"              # put your key in the inspector
 @export var MODEL_ID: String = "gemini-2.0-flash"    # ensure this exists for v1beta
 @export var system_prompt: String = ""
 
