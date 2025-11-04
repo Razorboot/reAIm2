@@ -8,7 +8,7 @@ class_name NarratorBackend
 @export var api_keys_path: String = "res://api_keys.json"  # path to your JSON with keys
 
 # Optional generation controls
-@export_range(0.0, 2.0, 0.05) var temperature: float = 0.7
+#@export_range(0.0, 2.0, 0.05) var temperature: float = 0.7
 @export var max_output_tokens: int = 256
 
 # --- Signals ---
@@ -60,7 +60,7 @@ func send_message(user_text: String) -> void:
 			"parts": [{"text": sys_text}]
 		},
 		"generationConfig": {
-			"temperature": temperature,
+			#"temperature": temperature,
 			"maxOutputTokens": max_output_tokens
 		},
 		"contents": _history

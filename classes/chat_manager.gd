@@ -207,6 +207,9 @@ func _on_reply_ready(t: String) -> void:
 		return
 
 	continueButton.disabled = false
+	
+	var print_str := t;
+	print("\nORIGINAL AI REPLY IS: " + t)
 
 	# Extract [secret] → _guess_object and strip it
 	var parsed := _extract_guess_and_strip(t)
@@ -300,6 +303,9 @@ func _extract_guess_and_strip(src: String) -> Dictionary:
 	if match:
 		var raw_inside := match.get_string(1)
 		_guess_object = _sanitize_guess(raw_inside)
+		
+		print("GUESS OBJECT IS: " + _guess_object)
+		
 		# Kick off 3D gen
 		rodin.generate_text_to_glb(_guess_object)
 
