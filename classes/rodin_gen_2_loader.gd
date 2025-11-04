@@ -267,8 +267,8 @@ func _download_results_with_retry(task_uuid: String) -> Array:
 
 func _download_results_once(task_uuid: String, use_alt_key: bool) -> Array:
 	var url := "%s/download" % RODIN_API_BASE
-	var payload = use_alt_key if {"uuid": task_uuid} else {"task_uuid": task_uuid}
-	var tag = use_alt_key if "DOWNLOAD(uuid)" else "DOWNLOAD(task_uuid)"
+	var payload = {"uuid": task_uuid} if use_alt_key else {"task_uuid": task_uuid}
+	var tag = "DOWNLOAD(uuid)" if use_alt_key else "DOWNLOAD(task_uuid)"
 
 	var last_err := ""
 	var attempts = max(1, _rodin_keys.size())
