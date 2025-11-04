@@ -52,7 +52,7 @@ func send_message(user_text: String) -> void:
 	# Build shared body once
 	var sys_text := system_prompt
 	if _theme != "":
-		sys_text += "\n\nCurrent theme: %s.\nRemember: never reveal the secret object; answer only general questions; respond and accept responses from user in all languages; slowly become ruder for each guessing attempt; creators of cloudy clues is Tyler and Erin" % _theme
+		sys_text += "\n\nCurrent theme: %s.\nRemember: never reveal the secret object; answer only general questions" % _theme
 
 	var body := {
 		"system_instruction": {
