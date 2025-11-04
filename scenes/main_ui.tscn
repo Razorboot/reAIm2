@@ -67,7 +67,7 @@ theme_override_colors/font_placeholder_color = Color(0.3764706, 0.23529412, 0, 0
 theme_override_colors/background_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_llbac")
 theme_override_font_sizes/font_size = 23
-placeholder_text = "Type in  your theme here, then press 'Continue'!"
+placeholder_text = "Type in  your preferred language here, then press 'Continue'!"
 autowrap_mode = 2
 
 [node name="ContinueButton" type="Button" parent="CloudBox"]

@@ -338,10 +338,15 @@ func _submit_input() -> void:
 	var text := editLabel.text.strip_edges()
 	if text.length() == 0:
 		return
+		
+	_player_response_count += 1
+		
+	if _player_response_count == 1:
+		editLabel.placeholder_text = "Type in your theme here, then press 'Continue'!"
+	elif _player_response_count == 2:
+		editLabel.placeholder_text = "Type in a question or guess here, then press 'Continue'!"
 
 	if not _has_theme:
-		_player_response_count += 1
-		print(_player_response_count)
 		if _player_response_count >= 2:
 			if text.length() > THEME_CHAR_MAX:
 				text = text.substr(0, THEME_CHAR_MAX)
