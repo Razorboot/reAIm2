@@ -64,6 +64,7 @@ var _game_over := false                     # <— NEW: block further interactio
 # Theme loop
 const THEME_CHAR_MAX := 150
 var _has_theme := false
+var _player_response_count := 0
 var _chosen_theme := ""
 
 # Ms. Pea defaults
@@ -339,13 +340,16 @@ func _submit_input() -> void:
 		return
 
 	if not _has_theme:
-		if text.length() > THEME_CHAR_MAX:
-			text = text.substr(0, THEME_CHAR_MAX)
-		_chosen_theme = text
-		_has_theme = true
-		chat.set_theme(_chosen_theme)
-		_send_ai_and_wait("The theme is: " + _chosen_theme)
-		return
+		_player_response_count += 1
+		print(_player_response_count)
+		if _player_response_count >= 2:
+			if text.length() > THEME_CHAR_MAX:
+				text = text.substr(0, THEME_CHAR_MAX)
+			_chosen_theme = text
+			_has_theme = true
+			chat.set_theme(_chosen_theme)
+			_send_ai_and_wait("The theme is: " + _chosen_theme)
+			return
 
 	_send_ai_and_wait(text)
 
