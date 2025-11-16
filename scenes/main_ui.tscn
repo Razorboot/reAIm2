@@ -1,0 +1,124 @@
+[gd_scene load_steps=15 format=3 uid="uid://bjrnc6vghj1xo"]
+
+[ext_resource type="Texture2D" uid="uid://b1fg2apslp6e7" path="res://images/cloud_box.png" id="1_2ppmm"]
+[ext_resource type="Script" uid="uid://bl6nykv1whdqx" path="res://classes/chat_manager.gd" id="1_4uoxc"]
+[ext_resource type="AudioStream" uid="uid://0ohen3yd64nx" path="res://audio/a_sound.wav" id="2_8yam0"]
+[ext_resource type="Script" uid="uid://d7wu4q72nkhv" path="res://classes/narrator_backend.gd" id="2_ktt6o"]
+[ext_resource type="AudioStream" uid="uid://d4lhv161f7oq1" path="res://audio/c_sound.wav" id="3_81ket"]
+[ext_resource type="FontFile" uid="uid://yjquut0b5cgf" path="res://fonts/FinkHeavy.ttf" id="3_llbac"]
+[ext_resource type="AudioStream" uid="uid://dpdwlvad674hu" path="res://audio/d_sound.wav" id="4_mcdcf"]
+[ext_resource type="AudioStream" uid="uid://cqwfgvdx24ylk" path="res://audio/o_sound .wav" id="5_sd2ej"]
+[ext_resource type="AudioStream" uid="uid://tq5hheqdkibk" path="res://audio/p_sound.wav" id="6_dnsp1"]
+[ext_resource type="AudioStream" uid="uid://bx6611igltm4x" path="res://audio/q_sound.wav" id="7_ilgax"]
+[ext_resource type="PackedScene" uid="uid://5k3op10evhou" path="res://prefabs/rodin_generator.tscn" id="12_mcdcf"]
+[ext_resource type="AudioStream" uid="uid://cy55a6csbrq3h" path="res://audio/win_sound.mp3" id="13_dnsp1"]
+[ext_resource type="AudioStream" uid="uid://csq6jr8ibilfb" path="res://audio/fail_sound.wav" id="13_mcdcf"]
+[ext_resource type="Script" uid="uid://86bij1bbui08" path="res://scenes/model_endpoint.gd" id="13_sd2ej"]
+
+[node name="MainUI" type="Control" node_paths=PackedStringArray("chat", "rodin", "chatLabel", "editLabel", "continueButton", "voiceBitPlayer", "winSoundPlayer", "failSoundPlayer", "uiBox")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4uoxc")
+chat = NodePath("NarratorBackend")
+rodin = NodePath("RodinGenerator")
+chatLabel = NodePath("CloudBox/NarratorLabel")
+editLabel = NodePath("CloudBox/UserLabel")
+continueButton = NodePath("CloudBox/ContinueButton")
+voiceBitPlayer = NodePath("VoiceBitPlayer")
+winSoundPlayer = NodePath("WinSoundPlayer")
+failSoundPlayer = NodePath("FailSoundPlayer")
+voiceBitSounds = [ExtResource("2_8yam0"), ExtResource("3_81ket"), ExtResource("4_mcdcf"), ExtResource("5_sd2ej"), ExtResource("6_dnsp1"), ExtResource("7_ilgax")]
+uiBox = NodePath("CloudBox")
+
+[node name="CloudBox" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 383.0
+offset_top = -265.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("1_2ppmm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="UserLabel" type="TextEdit" parent="CloudBox"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -278.0
+offset_top = -54.0
+offset_right = 278.0
+offset_bottom = 54.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0.8901961)
+theme_override_colors/font_placeholder_color = Color(0.3764706, 0.23529412, 0, 0.3764706)
+theme_override_colors/background_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_llbac")
+theme_override_font_sizes/font_size = 23
+placeholder_text = "Type in  your preferred language here, then press 'Continue'!"
+autowrap_mode = 2
+
+[node name="ContinueButton" type="Button" parent="CloudBox"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 177.5
+offset_top = 48.5
+offset_right = 274.5
+offset_bottom = 83.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Continue"
+
+[node name="NarratorLabel" type="RichTextLabel" parent="CloudBox"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -274.5
+offset_top = -52.5
+offset_right = 281.5
+offset_bottom = 31.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/default_color = Color(0.025130617, 0.104868524, 0.2567247, 1)
+theme_override_font_sizes/normal_font_size = 23
+autowrap_mode = 2
+
+[node name="NarratorBackend" type="Node" parent="."]
+script = ExtResource("2_ktt6o")
+system_prompt = "You are a friendly NPC named Ms. Pea who is cheerful, but sometimes witty and \"sassy,\" and you keep your messages pretty concise. You’re also a huge SuperCell video game fan who plays Brawl Stars and loves the character Jacky (since she hops), and you are a bunny (just as a fun fact)!First, you will ask the player what language they would like to converse in (and keep conversing in this language for the rest of the game – do not talk about the game rules until after this moment). After the player responds with their preferred language, the next question you will ask is for the player to pick a theme for the game. Based on the theme, you will pick ONLY an object that is easily generatable. The object will be one word, and it will be the name of some existing IP, media category, or object of that theme. After choosing the object, you will return the object you picked in your next response, surrounded by square brackets, such as [OBJECT_NAME], and this will be hidden from the player.Once the object has been chosen, the game loop begins: the player has 20 prompts that they can ask you. Keep count and subtract 1 from the count after each attempted prompt from the player. You will slowly become ruder for each guessing attempt. You absolutely cannot tell the player what the object you picked is, but you can answer GENERAL (not specific) questions about the object when asked. You cannot give any hints about specifics that relate to the object which would allow the player to easily guess what the object is, but you may give hints that are not specific, such as color, genre, category type, or relation to another object or subject. If the player asks something specific or asks for the answer, redirect the question by firmly saying you cannot answer a question like that.If the player guesses the object correctly, you will return: YOU WON!!! If the player does not guess the object by 20 guesses, you will return: YOU LOST!!! If the player asks what will be printed when they guess correctly or wrong, do not respond with the return responses; instead, redirect them to keep asking questions.This game was made by Tyler and Erin, and you are allowed to say they are the creators."
+
+[node name="VoiceBitPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -0.3
+
+[node name="RodinGenerator" parent="." instance=ExtResource("12_mcdcf")]
+
+[node name="RodinHandler" type="Node" parent="." node_paths=PackedStringArray("rodin")]
+script = ExtResource("13_sd2ej")
+rodin = NodePath("../RodinGenerator")
+
+[node name="WinSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_dnsp1")
+volume_db = -1.0
+
+[node name="FailSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_mcdcf")
+volume_db = 0.5

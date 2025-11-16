@@ -1,0 +1,132 @@
+[gd_scene load_steps=9 format=3 uid="uid://ducp0rl3hgf7d"]
+
+[ext_resource type="Script" uid="uid://bw2e5h1tb7iqq" path="res://scenes/loading_ui.gd" id="1_t106v"]
+[ext_resource type="Texture2D" uid="uid://ceoe4w3ktgygx" path="res://images/cloudy_clues_bunny.png" id="2_hxugv"]
+[ext_resource type="Texture2D" uid="uid://3fveaooqlt0f" path="res://images/Cloudy (1).png" id="3_2vrk6"]
+[ext_resource type="Texture2D" uid="uid://k156xgree7c2" path="res://images/Clues.png" id="4_8bje4"]
+
+[sub_resource type="SystemFont" id="SystemFont_yfq2j"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_jp5sq"]
+font = SubResource("SystemFont_yfq2j")
+font_size = 30
+font_color = Color(0, 0.4254209, 0.602378, 1)
+outline_color = Color(0.0005821798, 0.018084796, 0.05979292, 1)
+shadow_size = 676
+
+[sub_resource type="Animation" id="Animation_t106v"]
+resource_name = "sway"
+loop_mode = 1
+markers = [{
+"color": Color(0.3328463, 0.18583816, 0.1418446, 1),
+"name": &"1sec",
+"time": 0.0
+}]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hxugv"]
+_data = {
+&"sway": SubResource("Animation_t106v")
+}
+
+[node name="LoadingUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t106v")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+modulate = Color(0.93670046, 1, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 1.0
+offset_right = 3.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.94702, 0.98751336, 0.99308556, 1)
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 598.0
+offset_top = 489.0
+offset_right = 602.0
+offset_bottom = 516.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 452.0
+offset_top = 481.0
+offset_right = 740.0
+offset_bottom = 567.0
+text = "Loading..."
+label_settings = SubResource("LabelSettings_jp5sq")
+
+[node name="sway_animation" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Icon")
+libraries = {
+&"": SubResource("AnimationLibrary_hxugv")
+}
+autoplay = "sway"
+next/sway = &"sway"
+blend_times = [&"sway", &"sway", 2.0]
+
+[node name="Icon" type="TextureRect" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -502.99997
+offset_top = -585.0
+offset_right = 577.0
+offset_bottom = 495.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.225, 0.225)
+pivot_offset = Vector2(500, 500)
+texture = ExtResource("2_hxugv")
+
+[node name="Cloudy(1)" type="TextureRect" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -237.0
+offset_top = -316.0
+offset_right = 240.0
+offset_bottom = -98.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.13788101
+pivot_offset = Vector2(200, 100)
+texture = ExtResource("3_2vrk6")
+stretch_mode = 2
+
+[node name="Clues" type="TextureRect" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -48.0
+offset_right = 170.0
+offset_bottom = 126.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(150, 75)
+texture = ExtResource("4_8bje4")
+stretch_mode = 2

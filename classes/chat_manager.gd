@@ -64,6 +64,7 @@ var _game_over := false                     # <— NEW: block further interactio
 # Theme loop
 const THEME_CHAR_MAX := 150
 var _has_theme := false
+var _player_response_count := 0
 var _chosen_theme := ""
 
 # Ms. Pea defaults
@@ -206,6 +207,9 @@ func _on_reply_ready(t: String) -> void:
 		return
 
 	continueButton.disabled = false
+	
+	var print_str := t;
+	print("\nORIGINAL AI REPLY IS: " + t)
 
 	# Extract [secret] → _guess_object and strip it
 	var parsed := _extract_guess_and_strip(t)
@@ -299,6 +303,9 @@ func _extract_guess_and_strip(src: String) -> Dictionary:
 	if match:
 		var raw_inside := match.get_string(1)
 		_guess_object = _sanitize_guess(raw_inside)
+		
+		print("GUESS OBJECT IS: " + _guess_object)
+		
 		# Kick off 3D gen
 		rodin.generate_text_to_glb(_guess_object)
 
@@ -337,15 +344,23 @@ func _submit_input() -> void:
 	var text := editLabel.text.strip_edges()
 	if text.length() == 0:
 		return
+		
+	_player_response_count += 1
+		
+	if _player_response_count == 1:
+		editLabel.placeholder_text = "Type in your theme here, then press 'Continue'!"
+	elif _player_response_count == 2:
+		editLabel.placeholder_text = "Type in a question or guess here, then press 'Continue'!"
 
 	if not _has_theme:
-		if text.length() > THEME_CHAR_MAX:
-			text = text.substr(0, THEME_CHAR_MAX)
-		_chosen_theme = text
-		_has_theme = true
-		chat.set_theme(_chosen_theme)
-		_send_ai_and_wait("The theme is: " + _chosen_theme)
-		return
+		if _player_response_count >= 2:
+			if text.length() > THEME_CHAR_MAX:
+				text = text.substr(0, THEME_CHAR_MAX)
+			_chosen_theme = text
+			_has_theme = true
+			chat.set_theme(_chosen_theme)
+			_send_ai_and_wait("The theme is: " + _chosen_theme)
+			return
 
 	_send_ai_and_wait(text)
 
