@@ -1,9 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://ducp0rl3hgf7d"]
+[gd_scene load_steps=9 format=3 uid="uid://choiqqgxkc5fs"]
 
 [ext_resource type="Script" uid="uid://bw2e5h1tb7iqq" path="res://scenes/loading_ui.gd" id="1_t106v"]
 [ext_resource type="Texture2D" uid="uid://ceoe4w3ktgygx" path="res://images/cloudy_clues_bunny.png" id="2_hxugv"]
-[ext_resource type="Texture2D" uid="uid://3fveaooqlt0f" path="res://images/Cloudy (1).png" id="3_2vrk6"]
-[ext_resource type="Texture2D" uid="uid://k156xgree7c2" path="res://images/Clues.png" id="4_8bje4"]
+[ext_resource type="Texture2D" uid="uid://cau6mri2v775f" path="res://images/Cloudy.png" id="3_2vrk6"]
+[ext_resource type="Texture2D" uid="uid://1g3xlvhrs70j" path="res://images/Clues.png" id="4_8bje4"]
 
 [sub_resource type="SystemFont" id="SystemFont_yfq2j"]
 
@@ -94,7 +94,7 @@ scale = Vector2(0.225, 0.225)
 pivot_offset = Vector2(500, 500)
 texture = ExtResource("2_hxugv")
 
-[node name="Cloudy(1)" type="TextureRect" parent="."]
+[node name="Cloudy" type="TextureRect" parent="."]
 clip_contents = true
 layout_mode = 1
 anchors_preset = -1
@@ -102,10 +102,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -237.0
-offset_top = -316.0
-offset_right = 240.0
-offset_bottom = -98.0
+offset_left = -231.99997
+offset_top = -377.0
+offset_right = 268.0
+offset_bottom = 123.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 0.13788101
@@ -121,10 +121,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -48.0
-offset_right = 170.0
-offset_bottom = 126.0
+offset_left = -248.0
+offset_top = -70.0
+offset_right = 252.0
+offset_bottom = 430.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(150, 75)

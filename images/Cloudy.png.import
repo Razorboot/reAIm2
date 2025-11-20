@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3fveaooqlt0f"
-path="res://.godot/imported/Cloudy (1).png-2a8474426f25ef18afc6876db69b9b92.ctex"
+uid="uid://cau6mri2v775f"
+path="res://.godot/imported/Cloudy.png-9c9f23b0cc21d1aca1f1e4f50d6c52ad.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/Cloudy (1).png"
-dest_files=["res://.godot/imported/Cloudy (1).png-2a8474426f25ef18afc6876db69b9b92.ctex"]
+source_file="res://images/Cloudy.png"
+dest_files=["res://.godot/imported/Cloudy.png-9c9f23b0cc21d1aca1f1e4f50d6c52ad.ctex"]
 
 [params]
 

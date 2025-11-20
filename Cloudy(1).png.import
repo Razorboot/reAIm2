@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1g3xlvhrs70j"
-path="res://.godot/imported/Clues.png-7cf3dcc2df909744f186e48008e4f32a.ctex"
+uid="uid://dhdoyorxromho"
+path="res://.godot/imported/Cloudy(1).png-1995679eec483786e893bdec535b8916.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/Clues.png"
-dest_files=["res://.godot/imported/Clues.png-7cf3dcc2df909744f186e48008e4f32a.ctex"]
+source_file="res://Cloudy(1).png"
+dest_files=["res://.godot/imported/Cloudy(1).png-1995679eec483786e893bdec535b8916.ctex"]
 
 [params]
 

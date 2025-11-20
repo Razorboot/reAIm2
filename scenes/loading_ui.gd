@@ -7,12 +7,12 @@ var progress := [0.0] # Threaded loader requires an array for progress
 @onready var icon        = $Icon
 @onready var progress_bar = $ProgressBar
 @onready var label       = $Label
-@onready var cloudy_txt  = $"Cloudy(1)"
+@onready var cloudy_txt  = $"Cloudy"
 @onready var clues_txt = $Clues
 
 var sway_speed     := 1.5
 var sway_angle     := 5.0
-var scale_variation := 0.02
+var scale_variation := .02
 
 # Fade variables
 @onready var fade_rect   = $FadeRect  # Fullscreen ColorRect covering screen
@@ -83,8 +83,7 @@ func _process(_delta: float) -> void:
 	if clues_txt:
 		var time = Time.get_ticks_msec() / 1000.0
 		var angle = sin(time * sway_speed) * sway_angle
-		var scale_factor = sin(time * 2.0) + scale_variation 
-		
+		var scale_factor = sin(time * 2.0) * 0.5 + 1.0
 
 		clues_txt.rotation_degrees = angle
 		clues_txt.scale = Vector2(scale_factor, scale_factor)
